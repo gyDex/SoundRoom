@@ -1,0 +1,26 @@
+.searcher {
+    width: 100%;
+    
+    cursor: pointer;
+
+    border: #ebebff23 1px solid;
+    border-radius: 12px;
+    background-color: #171718;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    padding-inline: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    &__input {
+        flex-grow: 1;
+    }
+
+    &__input:focus-within {
+        outline: none;
+    }
+}
