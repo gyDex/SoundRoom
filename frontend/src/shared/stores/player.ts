@@ -119,9 +119,10 @@ class PlayerStore {
         if (this.indexPlaylist === 0) return;
         
         this.indexPlaylist -= 1;
-        console.log(this.indexPlaylist)
-        this.currentPlay = toJS(playlist[this.indexPlaylist]);
-        this.currentPlay.audio = toJS(playlist[this.indexPlaylist].urlFile as any);
+        const track = toJS(playlist[this.indexPlaylist])
+
+        this.currentPlay = track;
+        this.currentPlay.audio = track.urlFile;
         this.isPlay = true;
 
         console.log('Текущий трек:', this.currentPlay);
@@ -143,10 +144,12 @@ class PlayerStore {
         console.log(playlist)
         
         this.indexPlaylist += 1;
-        console.log(this.indexPlaylist)
 
-        this.currentPlay = toJS(playlist[this.indexPlaylist]);
-        this.currentPlay.audio = toJS(playlist[this.indexPlaylist].urlFile as any);
+        const track = toJS(playlist[this.indexPlaylist])
+
+        this.currentPlay = track;
+        // this.currentPlay.group = 
+        this.currentPlay.audio = toJS(track.urlFile as any);
         this.isPlay = true;
         
         console.log('Текущий трек:', this.currentPlay);

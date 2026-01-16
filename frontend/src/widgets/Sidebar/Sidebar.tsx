@@ -15,7 +15,7 @@ import { useEffect } from 'react';
 import { Playlist } from '@/shared/hooks/usePlaylistUser';
 import { usePlaylist } from '@/shared/lib/graphql/usePlaylist';
 import { FaCheck, FaUserFriends } from 'react-icons/fa';
-import { Dropdown, MenuProps } from 'antd';
+import { Dropdown, MenuProps, Tag } from 'antd';
 import { IoPersonAdd } from 'react-icons/io5';
 import { observer } from 'mobx-react-lite';
 import { friendsTabStore } from '@/shared/stores/friends-tab';
@@ -128,7 +128,7 @@ export const Sidebar = observer(() => {
                         </div>
 
                         <div className='sidebar__group mb-[32px]'>
-                            <span className='sidebar__group-name'>MY COLLECTION</span>
+                            <span className='sidebar__group-name'>MY COLLECTION <Tag  key={'gold'} color={'gold'} variant={'outlined'}>Coming soon</Tag> </span>
 
                             <ul className='sidebar__group-list'>
                                 {
