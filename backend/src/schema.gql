@@ -38,6 +38,10 @@ input DeletePlaylistInput {
   playlistId: ID!
 }
 
+input GetUsersInput {
+  roomId: ID!
+}
+
 input GoogleLoginInput {
   token: String!
 }
@@ -77,6 +81,12 @@ type Mutation {
   updateTrack(updateTrackInput: UpdateTrackInput!): Track!
 }
 
+type PartyOutput {
+  connectedUsers: [User!]!
+  createdAt: String
+  hostId: String!
+}
+
 type Playlist {
   createdAt: DateTime!
   id: ID!
@@ -91,6 +101,7 @@ type Playlist {
 type Query {
   checkFavorite(input: AddFavoriteInput!): Boolean!
   getAllFriends: [User!]!
+  getConnectedUsers(input: GetUsersInput!): PartyOutput!
   getFavorite: [Track!]!
   getIncomingFriendRequests: [IncomingFriendRequest!]!
   getMe: User!

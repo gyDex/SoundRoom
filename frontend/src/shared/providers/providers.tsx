@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConfigProvider, theme } from 'antd';
 import { AuthProvider } from './AuthProvider';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { SocketProvider } from './SocketProvider';
 
 const Providers = ({ children } : { children: React.ReactNode }) => {
   const [queryClient] = useState(() => new QueryClient({
@@ -24,9 +25,11 @@ const Providers = ({ children } : { children: React.ReactNode }) => {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
+          <SocketProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </SocketProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ConfigProvider>

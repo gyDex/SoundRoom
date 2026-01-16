@@ -11,6 +11,7 @@ import { PlaylistModule } from './playlist/playlist.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
+import { PartyModule } from './party/party.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { FriendsModule } from './friends/friends.module';
     UsersModule,
     AuthModule,
     FriendsModule,
+    PartyModule,
   ],
   controllers: [UploadController],
   providers: [ConfigService, SupabaseService],

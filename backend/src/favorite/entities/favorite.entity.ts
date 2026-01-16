@@ -1,5 +1,5 @@
-import { User } from 'src/auth/entities/user.entity';
-import { Track } from 'src/track/track.entity';
+import { User } from '../../auth/entities/user.entity';
+import { Track } from '../../track/entities/track.entity';
 import {
   Entity,
   ManyToOne,

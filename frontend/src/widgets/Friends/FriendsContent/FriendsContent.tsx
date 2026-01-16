@@ -7,14 +7,13 @@ import { SendRequest } from "../SendRequest/SendRequest"
 import type { DropdownProps, MenuProps } from 'antd';
 import { createStyles } from 'antd-style';
 import { IoIosArrowDown } from "react-icons/io"
-import { useState } from "react"
 import { FaUserFriends } from "react-icons/fa"
 import { MdMail } from "react-icons/md"
 import { IoPersonAdd } from "react-icons/io5"
+import { friendsTabStore } from "@/shared/stores/friends-tab"
+import { observer } from "mobx-react-lite"
 
-export const FriendsContent = () => {
-
-    const [content, setContent] = useState<'send' | 'add' | 'list'>('add');
+export const FriendsContent = observer(() => {
 
     const useStyles = createStyles(({ token }) => ({
     root: {
@@ -28,37 +27,37 @@ export const FriendsContent = () => {
 
     const items: MenuProps['items'] = [
         {
-            key: '1',
+            key: '0',
             label: 'Добавить друга',
             icon: <IoPersonAdd  color={'white'} size={18}/>,
-            onClick: () => setContent('add')
+            onClick: () => friendsTabStore.switchTab('add')
+        },
+        {
+            key: '1',
+            label: 'Ваши друзья',
+            icon: <FaUserFriends color={'white'} size={18} />,
+            onClick: () => friendsTabStore.switchTab('list')
         },
         {
             key: '2',
-            label: 'Ваши друзья',
-            icon: <FaUserFriends color={'white'} size={18} />,
-            onClick: () => setContent('list')
-        },
-        {
-            key: '3',
             label: 'Приглашения',
             icon: <MdMail color={'white'} size={18} />,
-            onClick: () => setContent('send')
+            onClick: () => friendsTabStore.switchTab('send')
         },
     ];
 
     const functionStyles: DropDownProps['styles'] = (info) => {
-    const { props } = info;
-    const isClick = props.trigger?.includes('click');
-    if (isClick) {
-        return {
-        root: {
-            borderColor: '#1890ff',
-            borderRadius: '8px',
-        },
-        } satisfies DropdownProps['styles'];
-    }
-    return {};
+        const { props } = info;
+        const isClick = props.trigger?.includes('click');
+        if (isClick) {
+            return {
+            root: {
+                borderColor: '#1890ff',
+                borderRadius: '8px',
+            },
+            } satisfies DropdownProps['styles'];
+        }
+        return {};
     };
 
     const { styles } = useStyles();
@@ -72,26 +71,26 @@ export const FriendsContent = () => {
 
     return (
         <>
-            <Dropdown {...sharedProps} className="w-full flex !justify-start" styles={functionStyles} trigger={['click']}>
+            <Dropdown {...sharedProps} className="w-full flex !justify-start mt-[10px]" styles={functionStyles} trigger={['click']}>
                 <Button type="primary">
-                    <Space>
-                        { content === 'add' && 'Добавить друга'}
-                        { content === 'list' && 'Ваши друзья'}
-                        { content === 'send' && 'Приглашения'}
+                    <Space className="text-md font-bold">
+                        { friendsTabStore.FriendTab === 'add' && 'Добавить друга'}
+                        { friendsTabStore.FriendTab === 'list' && 'Ваши друзья'}
+                        { friendsTabStore.FriendTab === 'send' && 'Приглашения'}
                         <IoIosArrowDown size={16} color="white" />
                     </Space>
                 </Button>
             </Dropdown>
 
             {
-                content === 'add' && <AddFriends />
+                friendsTabStore.FriendTab === 'add' && <AddFriends />
             }
             {
-                content === 'list' && <ListFriends />
+                friendsTabStore.FriendTab === 'list' && <ListFriends />
             }
             {
-                content === 'send' && <SendRequest />
+                friendsTabStore.FriendTab === 'send' && <SendRequest />
             }
         </>
     )
-}
+})
