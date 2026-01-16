@@ -13,11 +13,11 @@ export const Header = () => {
             <div className='header__wrapper'>
                 <div className='header__left'>
                     <button onClick={() => router.back()} className='header__btn'>
-                        <MdArrowBackIosNew />
+                        <MdArrowBackIosNew color='white' />
                     </button>
 
                     <button  onClick={() => router.forward()} className='header__btn'>
-                        <MdArrowForwardIos />
+                        <MdArrowForwardIos color='white' />
                     </button>
                 </div>
 

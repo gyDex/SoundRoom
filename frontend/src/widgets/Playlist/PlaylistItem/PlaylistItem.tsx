@@ -2,23 +2,42 @@
 
 import Image from 'next/image'
 import './PlaylistItem.scss'
-import { useState } from 'react'
+import { ChangeEventHandler, MouseEventHandler, useMemo, useState } from 'react'
 import { FaPause, FaPlay } from 'react-icons/fa'
 import { playerStore } from '@/shared/stores/player'
 import { observer } from 'mobx-react-lite'
+import { conversionToTime } from '@/features/ConversionToTime'
+import { useRouter } from 'next/navigation'
+import FavoriteButton from '@/widgets/FavoriteButton/FavoriteButton'
+import { useFavTracks } from '@/shared/hooks/useFavTracks'
 
 type Props = {
     id: string;
     name: string;
+    order?: number,
+    urlFile: string,
+    duration: number,
+    artist: string,
+    createAt: Date,
+
+    index: number,
+    playlist: any[];
 }
 
-export const PlaylistItem: React.FC<Props> = observer(({ id, name }) => {
+export const PlaylistItem: React.FC<Props> = observer(({ playlist, index, id, name, urlFile, duration, artist, createAt  }) => {
+    
     const [isHover, setHover] = useState(false);
 
-    const handleClick = () => {
+    const router = useRouter();
+
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
         if (playerStore.current?.id === id) {
             playerStore.togglePlay();
             playerStore.setCurrentTime(0);
+
+            playerStore.selectPlaylist(playlist, index);
+            playerStore.changeIndexPlaylist(index, id);
 
         } else {    
             playerStore.pause();
@@ -26,15 +45,13 @@ export const PlaylistItem: React.FC<Props> = observer(({ id, name }) => {
             playerStore.selectPlay({
                 album: '',
                 file: '',
-                audio: '/mock/music.mp3',
+                audio: urlFile,
                 group: 'Group 1',
                 id: id,
                 image: '/images/def.png',
                 name: name,
             });
             playerStore.play();
-
-            console.log(playerStore)
         }
     }
 
@@ -45,12 +62,13 @@ export const PlaylistItem: React.FC<Props> = observer(({ id, name }) => {
 
     return (
         <div 
-            onClick={handleClick} 
+            key={id}
+            onClick={() => router.push(`/track/${id}`)}
             className='playlist-item'
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
         >
-            <div className='playlist-item__image-wrap'>
+            <div onClick={handleClick}  className='playlist-item__image-wrap'>
                 <Image 
                     className='playlist-item__image' 
                     src={'/images/def.png'} 
@@ -69,12 +87,15 @@ export const PlaylistItem: React.FC<Props> = observer(({ id, name }) => {
 
             <div className='playlist-item__text-wrap'>
                 <span className='playlist-item__title'>{name}</span>
-                <span className='playlist-item__group'>Group 1</span>
+                <span className='playlist-item__group'>{artist}</span>
             </div>
 
-            <span className='playlist-item__date'>Nov 4, 2023</span>
+
+            <span className='playlist-item__time'>{conversionToTime(duration)}</span>
             <span className='playlist-item__album'>Album</span>
-            <span className='playlist-item__time'>2:00</span>
+
+            <FavoriteButton id={id} />
+            <span className='playlist-item__date'>{`${createAt.toLocaleDateString()}`}</span>
         </div>
     );
 })
