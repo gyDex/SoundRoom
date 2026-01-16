@@ -12,7 +12,6 @@ import Loader from '@/widgets/Loader/Loader';
 
 import { ConnectToRoomForm } from '@/widgets/Room/ConnectToRoomForm/ConnectToRoomForm';
 import { RoomView } from '@/widgets/Room/RoomView/RoomView';
-import { RoomPlayer } from '@/widgets/Room/RoomPlayer/RoomPlayer';
 
 export const RoomsPage = observer(() => {
   const tabList = [
@@ -57,22 +56,8 @@ export const RoomsPage = observer(() => {
   useEffect(() => {
     if (!socket) return;
 
-    const onDeleted = ({ userId, state }: any) => {
-      if (!state) return; 
-      roomStore.changeRoom(state);
-    };
-
-    socket.on('user-left', onDeleted);
-
-    return () => {
-      socket.off('user-left', onDeleted);
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    if (!socket) return;
-
     const onDeleted = ({ roomId }: any) => {
+      console.log('leave')
       roomStore.clearRoom();
       playerStore.leaveRoom();
       setActiveTabKey('connect');
@@ -82,6 +67,42 @@ export const RoomsPage = observer(() => {
 
     return () => {
       socket.off('room-deleted', onDeleted);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onUserDeleted = ({ userId, state }: any) => {
+      if (userId === user.id) {
+        if (!state) return; 
+        roomStore.changeRoom(state);
+      }
+    };
+
+    socket.on('user-left', onUserDeleted);
+
+    return () => {
+      socket.off('user-left', onUserDeleted);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onRoomLeft = ({ userId, roomId }: any) => {
+      if (userId === user.id) {
+        roomStore.clearRoom();
+        playerStore.leaveRoom();
+        setActiveTabKey('connect');
+
+      }
+    };
+
+    socket.on('room-left', onRoomLeft);
+
+    return () => {
+      socket.off('room-left', onRoomLeft);
     };
   }, [socket]);
 
