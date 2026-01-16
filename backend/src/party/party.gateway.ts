@@ -71,7 +71,7 @@ export class PartyGateway {
 
     console.log(userId, roomId)
 
-    await this.roomService.join(userId, roomId)
+    await this.roomService.join(userId, roomId, state.password)
     
     console.log(room)
 
@@ -86,7 +86,7 @@ export class PartyGateway {
 
   @SubscribeMessage('leave-room')
   async leaveRoom(
-    @MessageBody() { roomId },
+    @MessageBody() { roomId, userId },
     @ConnectedSocket() socket: Socket,
   ) {
     console.log('leave-room triggered for room:', roomId);
@@ -94,31 +94,28 @@ export class PartyGateway {
     console.log(roomId)
     
     try {
-      const userId = socket.handshake.auth.userId;
-
       if (!userId) {
         socket.emit('error', { message: 'User not authenticated' });
         return;
       }
 
       // Удаляем из базы данных
-      const updatedParty = await this.roomService.leave(userId, roomId, this.server);
+      const updatedParty = await this.roomService.leave(userId, roomId);
 
       // Покидаем комнату Socket.IO
       socket.leave(roomId);
 
-      // Уведомляем остальных
-      if (updatedParty) {
-        this.server.to(roomId).emit('user-left', {
-          userId,
-          state: updatedParty,
-        });
-      }
+      this.server.to(roomId).emit('room-deleted', { roomId });
+
+      this.server.to(roomId).emit('user-left', {
+        userId,
+        state: updatedParty,
+      });
 
       console.log(`👋 User ${userId} left room ${roomId}`);
       
       // Отправляем подтверждение пользователю
-      socket.emit('room-left', { roomId, success: true });
+      socket.emit('room-left', { userId, roomId, success: true });
       
     } catch (error) {
       console.error('Error leaving room:', error.message);
@@ -134,25 +131,18 @@ export class PartyGateway {
   ) {
     const userId = socket.handshake.auth.userId;
 
-    const room = await this.roomService.get(roomId);
-
-    console.log(room, 'room')
-    
-    // if (!room) return;
+    const room = await this.roomService.join(userId, roomId, password)
+    if (!room) return;
 
     socket.join(roomId);
 
-    await this.roomService.join(userId, roomId)
-
     console.log('👤 JOIN ROOM', roomId);
-
 
     socket.emit('room-joined', {
       roomId,
       isHost: false,
       state: room,
     });
-
   }
 
   @SubscribeMessage('change-track')

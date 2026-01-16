@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import './PlaylistItem.scss'
-import { ChangeEventHandler, MouseEventHandler, useMemo, useState } from 'react'
+import {useState } from 'react'
 import { FaPause, FaPlay } from 'react-icons/fa'
 import { playerStore } from '@/shared/stores/player'
 import { observer } from 'mobx-react-lite'
