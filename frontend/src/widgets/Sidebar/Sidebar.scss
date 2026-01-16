@@ -86,8 +86,11 @@
         padding-block: 2.5px;
         padding-inline: 5px;
     }
-    
 
+    &__group-item:hover a {
+        color: rgba(255, 255, 255, 0.575) !important;
+    }
+    
     &__handle {
         width: 12px;
         display: flex;
@@ -118,6 +121,10 @@
         &__group-item:hover {
             color: white;
             background-color: #ffffff38;
+        }
+
+        &__group-item:hover a {
+            color: white;
         }
     }
 }

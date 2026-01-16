@@ -4,6 +4,7 @@ import { SupabaseService } from './supabase.service';
 import { TrackService } from 'src/track/track.service';
 import * as path from 'path'
 import { randomUUID } from 'crypto';
+import { transliterate } from 'transliteration';
 
 @Controller('upload')
 export class UploadController {
@@ -25,7 +26,13 @@ export class UploadController {
   @Post('image')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImageFile(@UploadedFile() file: Express.Multer.File) {
-    const fileName = `${Date.now()}-${file.originalname}`;
+    const transliteratedName = transliterate(file.originalname, {
+      replace: [[' ', '-']], // заменяем пробелы на дефисы
+      ignore: ['.', '_', '-'] // игнорируем существующие символы
+    });
+  
+    const fileName = `${Date.now()}-${transliteratedName}`
+
     await this.supabaseService.uploadFile(
       fileName,
       file.buffer,
@@ -45,6 +52,15 @@ export class UploadController {
   async uploadTrackFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
     const trackData = body;
 
+    const transliteratedName = transliterate(file.originalname, {
+      replace: [[' ', '-']], // заменяем пробелы на дефисы
+      ignore: ['.', '_', '-'] // игнорируем существующие символы
+    });
+  
+    const fileName = `${Date.now()}-${transliteratedName}`;
+
+    console.log(fileName)
+
     if (!file) {
       throw new BadRequestException('File is required');
     }
@@ -55,18 +71,16 @@ export class UploadController {
       size: file.size
     });
 
-
-    const ext = path.extname(file.originalname); // например .mp3
-    const safeFileName = `${Date.now()}-${randomUUID()}${ext}`;
+    const ext = path.extname(file.originalname); 
     await this.supabaseService.uploadFile(
-      safeFileName,
+      fileName,
       file.buffer,
       file.mimetype,
       'files'
     );
 
     // Получаем публичный URL
-    const fileUrl = await this.supabaseService.getPublicUrl(safeFileName);
+    const fileUrl = await this.supabaseService.getPublicUrl(fileName);
 
     const duration = await  this.supabaseService.getAudioDuration(file.buffer, file)
 

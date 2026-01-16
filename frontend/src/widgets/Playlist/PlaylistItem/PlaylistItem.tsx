@@ -10,6 +10,8 @@ import { conversionToTime } from '@/features/ConversionToTime'
 import { useRouter } from 'next/navigation'
 import FavoriteButton from '@/widgets/FavoriteButton/FavoriteButton'
 import { useFavTracks } from '@/shared/hooks/useFavTracks'
+import { useSocket } from '@/shared/providers/SocketProvider'
+import { useAuth } from '@/shared/lib/graphql/useAuth'
 
 type Props = {
     id: string;
@@ -28,16 +30,27 @@ export const PlaylistItem: React.FC<Props> = observer(({ playlist, index, id, na
     
     const [isHover, setHover] = useState(false);
 
+    const socket = useSocket();
+    const { user } = useAuth();
+
     const router = useRouter();
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
+        playerStore.selectPlaylist(playlist, index);
+
         if (playerStore.current?.id === id) {
             playerStore.togglePlay();
             playerStore.setCurrentTime(0);
 
-            playerStore.selectPlaylist(playlist, index);
+            
             playerStore.changeIndexPlaylist(index, id);
+            socket?.emit('change-track', {
+                roomId: playerStore.roomId,
+                userId: user.id,
+                position: playerStore.progress,
+                audio: playerStore.currentPlay,
+            });
 
         } else {    
             playerStore.pause();
@@ -46,12 +59,19 @@ export const PlaylistItem: React.FC<Props> = observer(({ playlist, index, id, na
                 album: '',
                 file: '',
                 audio: urlFile,
-                group: 'Group 1',
+                group: artist,
                 id: id,
                 image: '/images/def.png',
                 name: name,
             });
             playerStore.play();
+
+            socket?.emit('change-track', {
+                roomId: playerStore.roomId,
+                userId: user.id,
+                position: playerStore.progress,
+                audio: playerStore.currentPlay,
+            });
         }
     }
 

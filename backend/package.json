@@ -37,7 +37,9 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-socket.io": "^11.1.11",
     "@nestjs/typeorm": "^11.0.0",
+    "@nestjs/websockets": "^11.1.11",
     "@prisma/client": "^6.18.0",
     "@supabase/supabase-js": "^2.78.0",
     "antd-style": "^4.1.0",
@@ -56,6 +58,7 @@
     "postgres": "^3.4.7",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "transliteration": "^2.6.0",
     "typeorm": "^0.3.27"
   },
   "devDependencies": {

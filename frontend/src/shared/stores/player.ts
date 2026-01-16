@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 
 export type PlayElement = {
     id?: string;
@@ -9,10 +9,11 @@ export type PlayElement = {
     image?: string,
 
     audio?: string,
+    urlFile?: string,
 }
 
 class PlayerStore {
-    isPlay = true;
+    isPlay = false;
     progressTrack = 0;
     currentPlay: PlayElement | null = null;
     duration =  0;
@@ -25,6 +26,39 @@ class PlayerStore {
     currentTime = 0;
 
     audio?: string;
+
+    roomId?: string;
+    isHost = false;
+
+    // sync state
+    serverPosition = 0;
+    serverUpdatedAt = 0;
+
+    isRoom = false;
+
+    isUnlocked = false;
+
+    unlock() {
+        this.isUnlocked = true;
+    }
+
+    startSolo() {
+        this.isRoom = false;
+        this.roomId = undefined;
+        this.isHost = true;
+    }
+
+    joinRoom(roomId: string, isHost: boolean) {
+        this.isRoom = true;
+        this.roomId = roomId;
+        this.isHost = isHost;
+    }
+
+    leaveRoom() {
+        this.isRoom = false;
+        this.roomId = undefined;
+        this.isHost = false;
+    }
 
     constructor() {
         makeAutoObservable(this);
@@ -74,19 +108,48 @@ class PlayerStore {
     }
 
     prevTrack() {
+        const playlist = toJS(this.selectedPlaylist);
+
+        if (!playlist || playlist.length === 0) {
+            console.log('Плейлист пуст');
+            return;
+        }
+        console.log(playlist)
+
         if (this.indexPlaylist === 0) return;
         
         this.indexPlaylist -= 1;
-        this.currentPlay = this.selectedPlaylist[this.indexPlaylist];
+        console.log(this.indexPlaylist)
+        this.currentPlay = toJS(playlist[this.indexPlaylist]);
+        this.currentPlay.audio = toJS(playlist[this.indexPlaylist].urlFile as any);
         this.isPlay = true;
+
+        console.log('Текущий трек:', this.currentPlay);
     }
 
     nextTrack() {
-        if (this.indexPlaylist === this.selectedPlaylist.length) return;
+        const playlist = toJS(this.selectedPlaylist);
+        
+        if (!playlist || playlist.length === 0) {
+            console.log('Плейлист пуст');
+            return;
+        }
+        
+        if (this.indexPlaylist >= playlist.length - 1) {
+            console.log('Это последний трек в плейлисте');
+            return;
+        }
 
+        console.log(playlist)
+        
         this.indexPlaylist += 1;
-        this.currentPlay = this.selectedPlaylist[this.indexPlaylist];
+        console.log(this.indexPlaylist)
+
+        this.currentPlay = toJS(playlist[this.indexPlaylist]);
+        this.currentPlay.audio = toJS(playlist[this.indexPlaylist].urlFile as any);
         this.isPlay = true;
+        
+        console.log('Текущий трек:', this.currentPlay);
     }
 
     //Getters
@@ -119,6 +182,27 @@ class PlayerStore {
             return `${mins}:${secs.toString().padStart(2, '0').slice(0,2)}`; 
         }
     }
+
+    applyServerState(state?: {
+        isPlaying: boolean;
+        position: number;
+        updatedAt: number;
+        audio: PlayElement,
+    }) {
+        if (!state) {
+            console.warn('applyServerState: empty state');
+            return;
+        }
+        console.log('applyServerState')
+        this.currentPlay = state.audio
+        this.isPlay = state.isPlaying;
+        this.serverPosition = state.position;
+        this.progressTrack = state.position;
+        this.serverUpdatedAt = state.updatedAt;
+
+        this.currentTime =
+            state.position + (Date.now() - state.updatedAt) / 1000;
+        }
 
     setIsPlay(play: boolean) {
         this.isPlay = play;
