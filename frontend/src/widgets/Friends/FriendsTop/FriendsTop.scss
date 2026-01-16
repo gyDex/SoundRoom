@@ -1,0 +1,11 @@
+.friends-top {
+    padding-top: 50px;
+    margin-left: 15px;
+
+    &__title {
+        font-size: 44px;
+        font-weight: 700;
+        position: relative;
+        z-index: 10;
+    }
+}

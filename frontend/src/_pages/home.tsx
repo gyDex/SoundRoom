@@ -1,76 +1,48 @@
+'use client';
 
-import { IAlbum } from '@/entities/types/IAlbum'
-import { Albums } from '@/widgets'
-import MusicGroup from '@/widgets/MusicGroup/MusicGroup'
-import React from 'react'
+import { usePlaylist } from '@/shared/lib/graphql/usePlaylist';
+import Loader from '@/widgets/Loader/Loader';
+import MusicGroup from '@/widgets/MusicGroup/MusicGroup';
+import { useState } from 'react';
 
 export const HomePage = () => {
-  const testAlbum = [
-    {
-      id: '1',
-      name: 'Test 1',
-      ulrImage: '/images/def2.png',
-      link: '/playlist/'
-    },
-    {
-      id: '2',
-      name: 'Test 2',
-      ulrImage: '/images/def2.png',
-      link: '/playlist/'
-    },
-    {
-      id: '3',
-      name: 'Test 2',
-      ulrImage: '/images/def2.png',
-      link: '/playlist/'
-    },
-    {
-      id: '4',
-      name: 'Test 2',
-      ulrImage: '/images/def2.png',
-      link: '/playlist/'
-    },
-    {
-      id: '5',
-      name: 'Test 2',
-      ulrImage: '/images/def2.png',
-      link: '/playlist/'
-    }
-  ] as IAlbum[]
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  const testTracks = [
-    {
-      id: '1',
-      name: 'Test 1',
-      ulrImage: '/images/def.png',
-    },
-    {
-      id: '2',
-      name: 'Test 2',
-      ulrImage: '/images/def2.png',
-    },
-    {
-      id: '3',
-      name: 'Test 2',
-      ulrImage: '/images/def.png',
-    },
-    {
-      id: '4',
-      name: 'Test 2',
-      ulrImage: '/images/def2.png',
-    },
-    {
-      id: '5',
-      name: 'Test 2',
-      ulrImage: '/images/default2.png',
-    }
-  ] as IGroup[]
+  const {
+    userLoading,
+    userError,
+    playlistsByUser,
+    userId,
+  } = usePlaylist();
+
+  if (userLoading) {
+    return     <Loader />;
+  }
+
+  if (userError) {
+    return <div>Ошибка загрузки данных</div>;
+  }
+
+  if (!userId) {
+    return <div>Пожалуйста, войдите в систему</div>;
+  }
+
+  const playlistsForMusicGroup = playlistsByUser && playlistsByUser.map((p: any) => ({
+    id: p.id,
+    name: p.name,
+    urlImage: p.imageUrl || '',
+    link: `/playlist/${p.id}`,
+  }));
 
   return (
-    <>
-      <Albums nameAlbums='Твоя альбомы' albums={testAlbum} />
-
-      <MusicGroup nameGroup='Твои треки' tracks={testTracks}  />
-    </>
-  )
-}
+    <MusicGroup
+      subtitle="Your Playlist"
+      variation="album"
+      IsModalOpen={isModalOpen}
+      setIsModalOpen={setModalOpen}
+      IsAddPlaylist
+      nameGroup="Твои плейлисты"
+      items={playlistsForMusicGroup}
+    />
+  );
+};

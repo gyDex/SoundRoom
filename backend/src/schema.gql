@@ -1,0 +1,164 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input AddFavoriteInput {
+  trackId: String!
+}
+
+input CreateFriendInput {
+  tag: String!
+}
+
+input CreatePlaylistInput {
+  createdAt: DateTime
+  imageUrl: String
+  name: String!
+  trackIds: [ID!]
+  updatedAt: DateTime
+  userId: ID!
+}
+
+input CreateTrackInput {
+  artist: String!
+  created_at: DateTime
+  duration: Int!
+  genre: String!
+  name: String!
+  playlistIds: [ID!]
+  urlFile: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DeletePlaylistInput {
+  playlistId: ID!
+}
+
+input GoogleLoginInput {
+  token: String!
+}
+
+type IncomingFriendRequest {
+  id: ID!
+  requester: User!
+}
+
+input LoginInput {
+  """User email address"""
+  email: String!
+
+  """User password"""
+  password: String!
+}
+
+type LogoutResponse {
+  """Logs out the current user and clears authentication tokens"""
+  success: String!
+}
+
+type Mutation {
+  addFavorite(input: AddFavoriteInput!): Boolean!
+  applyRequest(input: RequestIdInput!): Boolean!
+  createPlaylist(createPlaylistInput: CreatePlaylistInput!): Playlist!
+  createTrack(createTrackInput: CreateTrackInput!): Track!
+  deletePlaylist(deletePlaylistInput: DeletePlaylistInput!): Playlist!
+  googleLogin(googleLoginInput: GoogleLoginInput!): TokenResponse!
+  login(loginInput: LoginInput!): TokenResponse!
+  logout: LogoutResponse!
+  refreshToken: Boolean!
+  register(registerInput: RegisterInput!): TokenResponse!
+  rejectRequest(input: RequestIdInput!): Boolean!
+  removeTrack(id: Int!): Track!
+  sendFriendRequest(input: CreateFriendInput!): Boolean!
+  updateTrack(updateTrackInput: UpdateTrackInput!): Track!
+}
+
+type Playlist {
+  createdAt: DateTime!
+  id: ID!
+  imageUrl: String
+  name: String!
+  trackIds: [ID!]
+  tracks: [Track!]!
+  updatedAt: DateTime!
+  userId: ID!
+}
+
+type Query {
+  checkFavorite(input: AddFavoriteInput!): Boolean!
+  getAllFriends: [User!]!
+  getFavorite: [Track!]!
+  getIncomingFriendRequests: [IncomingFriendRequest!]!
+  getMe: User!
+  playlist(id: ID!): Playlist!
+  playlists: [Playlist!]!
+  playlistsByUser(userId: ID!): [Playlist!]!
+  track(id: ID!): Track!
+  tracks: [Track!]!
+  tracksByIds(ids: [ID!]!): [Track!]!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
+  userAvatar: String
+  username: String
+}
+
+input RequestIdInput {
+  id: String!
+}
+
+type TokenResponse {
+  """JWT access token for authentication"""
+  accessToken: String!
+
+  """Access token expiration time in seconds"""
+  expiresIn: Float!
+
+  """Refresh token for getting new access tokens"""
+  refreshToken: String!
+
+  """Type of token"""
+  tokenType: String!
+}
+
+type Track {
+  artist: String!
+  created_at: DateTime
+  duration: Int!
+  genre: String!
+  id: ID!
+  name: String!
+  playlists: [Playlist!]
+  urlFile: String
+}
+
+input UpdateTrackInput {
+  artist: String!
+  created_at: DateTime
+  duration: Int!
+  genre: String!
+  id: String!
+  name: String!
+  playlistIds: [ID!]
+  urlFile: String!
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  password: String!
+  playlists: [Playlist!]
+  provider: String!
+  refreshToken: String
+  tag: String!
+  updatedAt: DateTime!
+  userAvatar: String!
+  username: String
+}

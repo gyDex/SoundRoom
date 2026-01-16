@@ -26,10 +26,32 @@
         gap: 10px;
     }
 
+    &__profile-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    &__profile-btn {
+        cursor: pointer;
+        width: fit-content;
+        height: fit-content;
+        padding: 5px;
+        color: rgba(255, 255, 255, 0.375);
+        border-radius: 100%;
+    }
+
     &__group-name {
         color: #9898A6;
         font-size: 12px;
         font-weight: 500;
+    }
+
+    &__group-image {
+        border-radius: 8px;
+        width: 35px;   
+        object-fit: cover;
+        height: 35px;
     }
 
     &__group-list {
@@ -37,6 +59,13 @@
         flex-direction: column;
         gap: 10px;
         padding: 12px;
+    }
+
+    &__group-list_myplaylist {
+        overflow-y: scroll;
+        max-height: 200px;
+        scrollbar-width: thin;          /* "auto" или "thin"  */
+        scrollbar-color: rgba(142, 142, 142, 0.126) transparent;   /* плашка скролла и дорожка */ 
     }
 
     &__group-link {
@@ -51,6 +80,11 @@
         gap: 10px;
         cursor: pointer;
         align-items: center;
+        color: rgba(255, 255, 255, 0.575);
+
+        transition: 0.4s color background-color ease-in;
+        padding-block: 2.5px;
+        padding-inline: 5px;
     }
     
 
@@ -73,5 +107,17 @@
 
     @media screen and (max-width: 1024px) {
         display: none;
+    }
+
+    @media (hover: hover) {
+        &__profile-btn:hover {
+            color: white;
+            background-color: #ffffff38;
+        }
+
+        &__group-item:hover {
+            color: white;
+            background-color: #ffffff38;
+        }
     }
 }
