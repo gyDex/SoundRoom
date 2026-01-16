@@ -1,0 +1,272 @@
+.room-player {
+    margin-bottom: 25px;
+    width: 300px;
+    height: 80px;
+    border-radius: 15px;
+    border: 1px solid #303030;
+    background-color: rgba(255, 255, 255, 0.04);
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: visible;
+
+    // Контейнер для контента (текст, прогресс-бар)
+    &__content {
+        flex-grow: 1;
+        padding: 10px 15px 10px 85px; // Отступ слева 85px (100px изображение - 25px смещения + 10px padding)
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 10;
+        position: relative;
+    }
+
+    // Текстовая информация
+    &__name {
+        font-weight: 600;
+        font-size: 16px;
+        color: #ffffff;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+
+    &__artist {
+        color: rgba(255, 255, 255, 0.366);
+        font-weight: 500;
+        font-size: 14px;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+
+    // Прогресс-бар
+    &__progress {
+        height: 4px;
+        border-radius: 2px;
+        background-color: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        margin-top: 2px;
+        
+        &-fill {
+            height: 100%;
+            background-color: #4f46e5; // Индиго цвет
+            width: 45%; // Примерная позиция
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+    }
+
+    // Контролы воспроизведения (опционально)
+    &__controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        
+        button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                color: #ffffff;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+            
+            &.play-pause {
+                width: 28px;
+                height: 28px;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.2);
+                    transform: scale(1.05);
+                }
+            }
+        }
+    }
+
+    // Абсолютно позиционированное изображение альбома
+    &__album-art {
+        // Независимое позиционирование
+        position: absolute;
+        left: -25px;
+        top: 50%;
+        transform: translateY(-50%);
+        
+        // Фиксированные размеры, не зависящие от родителя
+        width: 100px;
+        height: 100px;
+        
+        // Стили круга
+        border-radius: 50%;
+        overflow: hidden;
+        z-index: 100;
+        
+        // Тень
+        box-shadow: 1px 1px 10px 5px rgba(0, 0, 0, 0.3);
+        
+        // Анимация вращения
+        animation: album-spin 10s linear infinite;
+        animation-play-state: running; // Можно менять на paused
+        
+        // Контейнер для изображения
+        .album-image {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+        }
+
+        // Центральная точка (дырка как у виниловой пластинки)
+        &::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 101;
+            width: 20px;
+            height: 20px;
+            background-color: #1d1d1d;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 
+                inset 0 0 5px rgba(0, 0, 0, 0.5),
+                0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        // Внешнее кольцо пластинки (опционально)
+        &::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            z-index: 99;
+        }
+    }
+
+    // Состояния
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.06);
+        border-color: #404040;
+        
+        .room-player__album-art {
+            animation-play-state: paused;
+            box-shadow: 
+                1px 1px 10px 5px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(79, 70, 229, 0.3);
+            
+            &::before {
+                background-color: #2d2d2d;
+            }
+        }
+    }
+    
+    &.playing {
+        .room-player__album-art {
+            animation-play-state: running;
+        }
+        
+        .room-player__progress-fill {
+            animation: progress-pulse 2s ease-in-out infinite;
+        }
+    }
+    
+    &.paused {
+        .room-player__album-art {
+            animation-play-state: paused;
+        }
+    }
+}
+
+// Анимация вращения пластинки
+@keyframes album-spin {
+    0% {
+        transform: translateY(-50%) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+// Анимация пульсации прогресс-бара
+@keyframes progress-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+// Модификаторы
+.room-player--small {
+    width: 250px;
+    height: 70px;
+    
+    .room-player__album-art {
+        width: 85px;
+        height: 85px;
+        left: -20px;
+    }
+    
+    .room-player__content {
+        padding-left: 75px; // 85px - 20px + 10px
+    }
+    
+    .room-player__name {
+        font-size: 14px;
+    }
+    
+    .room-player__artist {
+        font-size: 12px;
+    }
+}
+
+.room-player--large {
+    width: 350px;
+    height: 90px;
+    
+    .room-player__album-art {
+        width: 110px;
+        height: 110px;
+        left: -30px;
+    }
+    
+    .room-player__content {
+        padding-left: 90px; // 110px - 30px + 10px
+    }
+    
+    .room-player__name {
+        font-size: 18px;
+    }
+    
+    .room-player__artist {
+        font-size: 15px;
+    }
+}

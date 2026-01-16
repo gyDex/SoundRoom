@@ -1,11 +1,13 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, Column,  CreateDateColumn, UpdateDateColumn, Unique, OneToMany } from 'typeorm';
-import { Playlist } from 'src/track/entities/playlist.entity';
-import { Favorite } from 'src/favorite/entities/favorite.entity';
+import { Entity, PrimaryGeneratedColumn, Column,  CreateDateColumn, UpdateDateColumn, Unique, OneToMany, ManyToMany } from 'typeorm';
+import { Playlist } from '../../track/entities/playlist.entity';
+import { Favorite } from '../../favorite/entities/favorite.entity';
+import { PartyEntity } from '../../party/entities/party.entity';
 
 @ObjectType()
 @Entity('user')
-export class User {
+export class 
+User {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -22,8 +24,8 @@ export class User {
   @Column({unique: true})
   email: string;
 
-  @Field()
   @Column()
+  @Field()
   password: string;
 
   @Field()
@@ -55,4 +57,9 @@ export class User {
 
   @OneToMany(() => Favorite, fav => fav.user)
   favorites: Favorite[];
+
+  @ManyToMany(() => PartyEntity, party => party.connectedUsers, {
+    lazy: true, 
+  })
+  parties: Promise<PartyEntity[]>;
 }

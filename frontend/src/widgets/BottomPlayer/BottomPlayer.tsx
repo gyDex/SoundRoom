@@ -6,18 +6,164 @@ import { useEffect, useRef, useState } from 'react'
 import { HiMiniPause, HiMiniPlay } from 'react-icons/hi2'
 import { observer } from 'mobx-react-lite'
 import { playerStore } from '@/shared/stores/player'
-import { conversionToTime } from '@/features/ConversionToTime'
+import { conversionToTime } from '@/features/ConversionToTime';
+
+import { useAuth } from "@/shared/lib/graphql/useAuth";
+import { useSocket } from "@/shared/providers/SocketProvider";
+import { roomStore } from "@/shared/stores/room.store";
+import { toJS } from "mobx";
 
 export const BottomPlayer = observer(() => {
-  const [volume, setVolume] = useState(50);  
+  const [volume, setVolume] = useState(10);  
   const audioRef = useRef<HTMLAudioElement>(null);
+  const socket = useSocket();
+
+  const { user }  = useAuth() as any;
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
+  },[])
+
+  useEffect(() => {
+    if (!playerStore.isRoom) return;
+    if (!playerStore.isHost) return;
+    if (!playerStore.currentPlay) return;
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.src = playerStore.currentPlay.audio || '';
+    audio.currentTime = 0;
+
+    socket?.emit('change-track', {
+      roomId: roomStore.currentRoom?.id,
+      audio: playerStore.currentPlay,
+      duration: audio.duration || 0,
+    });
+
+  }, [playerStore.currentPlay?.id]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handler = (state: any) => {
+      console.log(state, 'change-track')
+
+      if (playerStore.isHost) return;
+
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      playerStore.applyServerState(state);
+
+      audio.src = state.audio.audio;
+      audio.currentTime = state.position || 0;
+      if (state.isPlaying) {
+        audio.play();
+      }
+    };
+
+    socket.on('change-track', handler);
+    return () =>  {socket.off('change-track', handler)};
+  }, [socket, playerStore.isHost]);
+
+
+  useEffect(() => {
+      if (!socket) return;
+
+      const onJoined = ({ roomId, isHost, state }: any) => {
+          console.log(state, 'joined')
+
+          playerStore.joinRoom(roomId, isHost);
+          roomStore.changeRoom(toJS(state));
+          playerStore.applyServerState(state);
+          const audio = audioRef.current as any;
+          
+          if (audio && playerStore.currentPlay) {
+            audio.src = playerStore.currentPlay?.audio;
+            playerStore.setDuration(state.duration)
+            handlePlayPause();
+          }
+      };
+
+    socket.on('room-joined', onJoined);
+
+    return () => {
+        socket.off('room-joined', onJoined);
+    };
+  }, [socket, playerStore.currentPlay?.audio]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('connect', () => {
+      console.log('✅ SOCKET CONNECTED', socket.id);
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('❌ SOCKET DISCONNECTED', reason);
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('❌ CONNECT ERROR', err.message);
+    });
+  }, [socket]);
+
+useEffect(() => {
+  if (!socket || !playerStore.isRoom) return;
+
+  const audio = audioRef.current;
+  if (!audio) return;
+
+  const handler = (state: any) => {
+    console.log(state)
+    
+    console.log('sync-state received:', state);
+
+    playerStore.applyServerState(state);
+
+    const expected = state.position + (Date.now() - state.updatedAt) / 1000;
+
+    if (Math.abs(audio.currentTime - expected) > 1.2) {
+      audio.currentTime = expected;
+    }
+
+    // ОБНОВЛЕНИЕ: Управление воспроизведением
+    if (state.isPlaying && audio.paused) {
+      audio.play().catch(e => console.error('Play error:', e));
+    } else if (!state.isPlaying && !audio.paused) {
+      audio.pause();
+    }
+
+    // Обновляем UI
+    playerStore.setCurrentTime(expected);
+    playerStore.setProgress((expected / state.duration) * 100);
+  };
+
+  socket.on('sync-state', handler);
+  return () => { socket.off('sync-state', handler); };
+}, [socket, playerStore.isRoom]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    if (audioRef.current) {
-      audioRef.current.currentTime = Math.floor((value / 100) * Math.floor(playerStore.duration));
-    }
+    if (!audioRef.current) return;
+
+    const newTime = (value / 100) * playerStore.duration;
+
+    audioRef.current.currentTime = newTime;
     playerStore.setProgress(value);
+
+    if (playerStore.isRoom && playerStore.isHost) {
+      socket?.emit('seek', {
+        roomId: roomStore.currentRoom?.id,
+        userId: user.id,
+        position: newTime,
+        audio: playerStore.currentPlay,
+        duration: playerStore.duration,
+      });
+    }
   };
 
   const handleVolumeClick = () => {
@@ -32,6 +178,47 @@ export const BottomPlayer = observer(() => {
       }
     }
   }
+
+  const handlePlayPause = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (!playerStore.isRoom) {
+      playerStore.togglePlay();
+      playerStore.IsPlay ? audio.play() : audio.pause();
+      return;
+    }
+
+    // if (!playerStore.isHost) return;
+
+    const position = audio.currentTime;
+
+    if (playerStore.IsPlay) {
+      playerStore.pause();
+      audio.pause();
+
+      console.log('pause');
+
+      socket?.emit('pause', {
+        roomId: roomStore.currentRoom?.id,
+        audio: playerStore.currentPlay,
+        position,
+        duration: playerStore.duration,
+      });
+    } 
+    else {
+      console.log('play');
+      playerStore.play(); 
+      audio.play();
+
+      socket?.emit('play', {
+        roomId: roomStore.currentRoom?.id,
+        position,
+        duration: playerStore.duration,
+        audio: playerStore.currentPlay,
+      });
+    }
+  };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -52,50 +239,60 @@ export const BottomPlayer = observer(() => {
         console.error('Playback error:', error);
         playerStore.pause();
       }
-    };
+  };
 
   useEffect(() => {
-    if (!audioRef.current) return;
-
     playAudio();
-  }, [playerStore.IsPlay]);
+  }, [playerStore.isPlay]);
 
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !playerStore.currentPlay) return;
+
+    audio.src = playerStore.currentPlay.audio;
+    audio.currentTime = 0;
+
+    playerStore.setProgress(0);
+    playerStore.setCurrentTime(0);
+  }, [playerStore.currentPlay?.id]);
+
+  useEffect(() => {
+    console.log('update')
+
     const audio = audioRef.current as any;
 
-    if (audio && playerStore.current) {
-      playerStore.setProgress(0);
-      playerStore.setCurrentTime(0);
-      audio.currentTime = (playerStore.progress / 100) * playerStore.duration;
+    // if (audio && playerStore.currentPlay) {
+    //   playerStore.setProgress(0);
+    //   playerStore.setCurrentTime(0);
+    //   audio.currentTime = (playerStore.progress / 100) * playerStore.duration;
 
-      if (playerStore.current.audio) {
-        audio.src = playerStore.current.audio;
-      }
-    }
+    //   if (playerStore.currentPlay?.audio) {
+    //     audio.src = playerStore.currentPlay?.audio;
+    //   }
+    // }
 
     playAudio();
-
 
     if (audio) {
       const handleTimeUpdate = () => {
-        if (audio.duration && !isNaN(audio.duration)) {
-          playerStore.setCurrentTime(audio.currentTime);
-        }
+        if (!audio.duration) return;
+
+        playerStore.setCurrentTime(audio.currentTime);
+        playerStore.setProgress(
+          (audio.currentTime / audio.duration) * 100
+        );
       };
 
       const handleLoadedMetadata = () => {
-        if (audio) {
-          audio.currentTime = (playerStore.progress / 100) * playerStore.duration;
-        }
-          
-        if (audio.duration) {
-          playerStore.setDuration(audio.duration);
-        } 
-        else {
-          console.log('❌ Invalid duration:', audio.duration);
+        if (!audio.duration) return;
+
+        playerStore.setDuration(audio.duration);
+
+        if (!playerStore.isRoom) {
+          audio.currentTime =
+            (playerStore.progress / 100) * audio.duration;
         }
       };
-
       const handleEnded = () => {
         playerStore.pause();
         playerStore.setProgress(0);
@@ -113,15 +310,6 @@ export const BottomPlayer = observer(() => {
       };
     }
   }, [playerStore.current?.id]);
-
-  useEffect(() => {
-    console.log(playerStore.currentTime)
-    console.log(playerStore.duration)
-    console.log((playerStore.currentTime / playerStore.duration) * 100)
-
-    playerStore.setProgress((playerStore.currentTime / playerStore.duration) * 100)
-
-  }, [playerStore.currentTime])
 
   return (
     <>
@@ -162,7 +350,7 @@ export const BottomPlayer = observer(() => {
                 </button>
 
                 <button 
-                  onClick={playerStore.togglePlay} 
+                  onClick={handlePlayPause} 
                   className='bg-[white] hover h-[48px] w-[48px] flex justify-center items-center rounded-[100%]'
                 >
                   {!playerStore.IsPlay ?
@@ -189,12 +377,21 @@ export const BottomPlayer = observer(() => {
                 max={100}
                 value={playerStore.progress}
 
-                onMouseDown={() => playerStore.setIsPlay(false)}
-                onMouseUp={() => playerStore.setIsPlay(true)}
+                onMouseDown={() => {
+                  if (!playerStore.isRoom) playerStore.setIsPlay(false);
+                }}
 
-                onTouchStart={() => playerStore.setIsPlay(false)}
-                onTouchEnd={() => playerStore.setIsPlay(true)}
+                onMouseUp={() => {
+                  if (!playerStore.isRoom) playerStore.setIsPlay(true);
+                }}
 
+                onTouchStart={() => {
+                  if (!playerStore.isRoom) playerStore.setIsPlay(false);
+                }}
+
+                onTouchEnd={() => {
+                  if (!playerStore.isRoom) playerStore.setIsPlay(true);
+                }}
                 onChange={handleProgressChange}
                 className="bottom-player__input"
                 style={{
