@@ -24,17 +24,28 @@ export const RoomView = observer(() => {
 
   const socket = useSocket();
 
-  const columns: TableColumnsType<UserRow> = useMemo(() => [
+   const isAdmin = useMemo(() => {
+    return user?.id === roomStore.hostId;
+  }, [user?.id, roomStore.hostId]);
+
+  useEffect(() => {
+    if (roomStore?.hostId && roomStore?.hostId !== '') {
+      roomStore.setHostId(roomStore.hostId);
+    }
+  }, [roomStore?.hostId]);
+
+  const baseColumns: TableColumnsType<UserRow> = useMemo(() => [
     {
       dataIndex: 'userAvatar',
       key: 'userAvatar',
+      width: 60,
       render: (src) => (
         <Image
           height={40}
           width={40}
-          src={src !== null && src !== undefined && src !== '' ? src : '/images/def.png'}
+          src={src || '/images/def.png'}
           className="rounded-[10px] relative z-20 max-w-fit"
-          alt=""
+          alt="User avatar"
         />
       ),
     },
@@ -45,11 +56,18 @@ export const RoomView = observer(() => {
       render: (value, record: UserRow) => (
         <div className='room-view__list-username'>
           <span>{value}</span>
-          {
-            roomStore.hostId === record.id && <Tag className='!ml-[10px]'  key={'blue'} color={'blue'} variant={'outlined'}>Admin</Tag>
-          }
+          {roomStore.hostId === record.id && (
+            <Tag className='!ml-[10px]' color='blue' >
+              Admin
+            </Tag>
+          )}
+          {user?.id === record.id && (
+            <Tag className='!ml-[10px]' color='green'>
+              You
+            </Tag>
+          )}
         </div>
-      )
+      ),
     },
     {
       title: 'Email',
@@ -64,19 +82,47 @@ export const RoomView = observer(() => {
         <span>{record.username}#{tag}</span>
       ),
     },
+  ], [roomStore.hostId, user?.id]);
+
+  const adminColumn: TableColumnsType<UserRow> = useMemo(() => [
     {
       title: 'Action',
-      dataIndex: '',
-      key: 'x',
-      render: () => <Button onClick={onDelete}>Delete</Button>,
-    },
-  ],[roomStore.hostId, user?.id]);
+      key: 'action',
+      width: 100,
+      render: (_, record: UserRow) => {
+        // Не показываем кнопку удаления для:
+        // 1. Текущего пользователя (админа)
+        // 2. Другого админа (если он есть)
+        const isCurrentUser = record.id === user?.id;
+        const isOtherAdmin = record.id === roomStore.hostId && record.id !== user?.id;
+        
+        if (isCurrentUser || isOtherAdmin) {
+          return null;
+        }
 
-  const onDelete = () => {
+        return (
+          <Button 
+            danger 
+            size="small"
+            onClick={() => onDelete(record.id)}
+          >
+            Remove
+          </Button>
+        );
+      },
+    },
+  ], [user?.id, roomStore.hostId]);
+
+  const columns = useMemo(() => {
+    return isAdmin ? [...baseColumns, ...adminColumn] : baseColumns;
+  }, [isAdmin, baseColumns, adminColumn]);
+
+  const onDelete = (userID: string) => {
     console.log('leave-room')
 
     socket?.emit('leave-room', {
       roomId: roomStore.currentRoom?.id,
+      userId: userID
     });
   }
   
@@ -91,19 +137,29 @@ export const RoomView = observer(() => {
   const onChange: TableProps<UserRow>['onChange'] = (pagination, filters, sorter, extra) => {
     console.log('params', pagination, filters, sorter, extra);
   };
-
-  console.log(roomStore)
-
+  
   return (
     <section className='room-view'>
         <div className='room-view__top'>
-            <h2 className='room-view__title'>
-                {roomStore.currentRoom?.name}
-            </h2>
+            <div className='room-view__top-right'>
+              <h2 className='room-view__title'>
+                  {roomStore.currentRoom?.name}
+              </h2>
 
-            <Tag key={'blue'} color={'blue'} variant={'outlined'}>
-              #{roomStore.currentRoom?.id}
-            </Tag>
+              <Tag key={'blue'} color={'blue'}>
+                #{roomStore.currentRoom?.id}
+              </Tag>
+            </div>
+
+            <div className='room-view__top-left'>
+              <Button 
+                danger 
+                size="middle"
+                onClick={() => onDelete(user.id)}
+              >
+                Leave the room
+              </Button>
+            </div>
         </div>
 
         <div className='room-view__content'>

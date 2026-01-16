@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -89,41 +90,35 @@ export class RoomService {
     }
   }
 
-  async leave(userId: string, roomId: string, server: any) {
-    const party = await this.partyRepo.findOne({
-      where: { id: roomId },
-      relations: ['connectedUsers'],
-    });
+async leave(userId: string, roomId: string) {
+  const party = await this.partyRepo.findOne({
+    where: { id: roomId },
+    relations: ['connectedUsers'],
+  });
 
-    if (!party) return null;
+  console.log(party, 'party')
+  console.log(userId, 'userId')
 
-    party.connectedUsers = party.connectedUsers.filter(
-      u => u.id !== userId,
-    );
+  if (!party) return null;
 
-if (party.createdBy === userId) {
-  const newHost = party.connectedUsers[0]?.id ?? null;
-  party.createdBy = newHost;
-
-  const state = this.rooms.get(roomId);
-  if (state && newHost) {
-    state.hostId = newHost;
-    this.rooms.set(roomId, state);
+  // 🔥 ХОСТ ВЫШЕЛ — УДАЛЯЕМ КОМНАТУ
+  if (party.hostId === userId) {
+    await this.partyRepo.delete(roomId);
+    return null;
   }
+
+  // 👤 ГОСТ ВЫШЕЛ — ТОЛЬКО УБИРАЕМ СВЯЗЬ
+  party.connectedUsers = party.connectedUsers.filter(
+    u => u.id !== userId,
+  );
+
+  await this.partyRepo.save(party);
+
+  return party;
 }
 
-    if (party.connectedUsers.length === 0) {
-      server.in(roomId).emit('room-deleted', { roomId })
-      this.rooms.delete(roomId);
-      await this.partyRepo.delete(roomId);
-      return null;
-    }
 
-    await this.partyRepo.save(party);
-    return party;
-  }
-
-  async join(userId: string, roomId: string) {
+  async join(userId: string, roomId: string, password: string) {
     const party = await this.partyRepo.findOne({
       where: { id: roomId },
       relations: ['connectedUsers'] // загружаем connectedUsers
@@ -133,9 +128,9 @@ if (party.createdBy === userId) {
       throw new NotFoundException(`Party ${roomId} not found`);
     }
     
-    if (party.isPrivate) {
-      // логика проверки пароля
-      // throw new UnauthorizedException('Invalid password');
+    if (party.isPrivate && party.password) {
+      const isValid = await bcrypt.compare(password, party.password);
+      if (!isValid) throw new UnauthorizedException('Invalid credentials');;
     }
     
     const isAlreadyJoined = party.connectedUsers?.some(
@@ -158,10 +153,13 @@ if (party.createdBy === userId) {
     
     await this.partyRepo.save(party);
     
-    return this.partyRepo.findOne({
-      where: { id: roomId },
-      relations: ['connectedUsers']
-    });
+    // return this.partyRepo.findOne({
+    //   where: { id: roomId },
+    //   relations: ['connectedUsers']
+    // });
+
+    return this.rooms.get(roomId);
+    
   }
 
   async create(roomId: string, hostId: string, audio: any, state: any) {
