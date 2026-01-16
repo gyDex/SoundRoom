@@ -1,7 +1,6 @@
 import { useMe } from "@/shared/hooks/auth/useMe";
 import { getPlaylistByUserID } from "@/shared/hooks/usePlaylistById";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 
 export function usePlaylist() {
     const { user, loading: userLoading, error: userError } = useMe();
@@ -13,7 +12,6 @@ export function usePlaylist() {
         queryFn: () => getPlaylistByUserID(userId!),
         enabled: !!userId,
     });
-
 
     const queryClient = useQueryClient();
 

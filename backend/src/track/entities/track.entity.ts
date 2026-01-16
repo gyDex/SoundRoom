@@ -2,7 +2,7 @@ import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToMany, JoinTable, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Playlist } from './playlist.entity';
 import { IsOptional } from 'class-validator';
-import { Favorite } from 'src/favorite/entities/favorite.entity';
+import { Favorite } from '../../favorite/entities/favorite.entity';
 
 @Entity('track')
 @ObjectType()

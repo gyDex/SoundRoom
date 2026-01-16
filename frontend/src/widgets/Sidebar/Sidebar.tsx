@@ -1,21 +1,27 @@
 'use client'
 
 import './Sidebar.scss';
-import { IoIosArrowForward, IoIosMore, IoMdHome } from 'react-icons/io';
+import { AiFillSound } from "react-icons/ai";
+import { IoIosArrowDown, IoIosArrowForward, IoIosMore, IoMdHome } from 'react-icons/io';
 import { IRoute, my_collection } from '@/shared/routes/my-collection';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { LuLogOut } from 'react-icons/lu';
-import { MdFavoriteBorder } from 'react-icons/md';
+import { MdFavoriteBorder, MdMail } from 'react-icons/md';
 import { CiSettings } from 'react-icons/ci';
 import { logout } from '@/shared/hooks/auth/logout';
 import { useAuth } from '@/shared/lib/graphql/useAuth';
 import { useEffect } from 'react';
 import { Playlist } from '@/shared/hooks/usePlaylistUser';
 import { usePlaylist } from '@/shared/lib/graphql/usePlaylist';
-import { FaUserFriends } from 'react-icons/fa';
+import { FaCheck, FaUserFriends } from 'react-icons/fa';
+import { Dropdown, MenuProps } from 'antd';
+import { IoPersonAdd } from 'react-icons/io5';
+import { observer } from 'mobx-react-lite';
+import { friendsTabStore } from '@/shared/stores/friends-tab';
 
-export const Sidebar = () => {
+
+export const Sidebar = observer(() => {
     const route = useRouter();
 
     const { resetUser, user } = useAuth();
@@ -30,6 +36,54 @@ export const Sidebar = () => {
             getPlaylist();
         }
     },[userId])
+
+    const items: MenuProps['items'] = [
+    {
+        label: (
+            <button onClick={() => friendsTabStore.switchTab('add')} className='w-full flex justify-between items-center'>
+                <div className='flex gap-[10px]'>
+                    <IoPersonAdd  color={'white'} size={18}/>
+                    Добавить друга
+                </div>
+
+                {
+                    friendsTabStore.FriendTab === 'add' && <FaCheck  size={15} />
+                }   
+            </button>
+        ),
+        key: '0',
+    },
+    {
+        label: (
+            <button onClick={() => friendsTabStore.switchTab('list')} className='w-full flex justify-between items-center'>
+                <div className='flex gap-[10px]'>
+                    <FaUserFriends color={'white'} size={18} />
+                    Ваши друзья
+                </div>
+
+                {
+                    friendsTabStore.FriendTab === 'list' && <FaCheck  size={15} />
+                }   
+            </button>
+        ),
+        key: '1',
+    },
+    {
+        label: (
+            <button onClick={() => friendsTabStore.switchTab('send')} className='w-full justify-between flex items-center'>
+                <div className='flex gap-[10px]'>
+                    <MdMail color={'white'} size={18} />    
+                    Приглашения
+                </div>
+
+                {
+                    friendsTabStore.FriendTab === 'send' && <FaCheck  size={15} />
+                }       
+            </button>
+        ),
+        key: '2',
+    },
+    ];
     
     const playlists = playlistsByUser 
         ? (Array.isArray(playlistsByUser) ? playlistsByUser : [playlistsByUser])
@@ -113,6 +167,15 @@ export const Sidebar = () => {
                             </div>
                         </div>
 
+                        <div onClick={() => route.push('/rooms')} className='sidebar__group mb-[10px]'>
+                            <div className='sidebar__group-item'>
+                                <AiFillSound  size={25} />
+
+                                Rooms
+                            </div>
+                        </div>
+
+
                         <div onClick={() => route.push('/favorite')} className='sidebar__group mb-[10px]'>
                             <div className='sidebar__group-item'>
                                 <MdFavoriteBorder  size={25} />
@@ -122,11 +185,16 @@ export const Sidebar = () => {
                         </div>
 
                         <div onClick={() => route.push('/friends')} className='sidebar__group mb-[10px]'>
-                            <div className='sidebar__group-item'>
-                                <FaUserFriends   size={25} />
+                            <Dropdown menu={{ items }} className='w-full sidebar__group-item'>
+                                <a className='w-full flex gap-[10px] justify-between' onClick={(e) => e.preventDefault()}>
+                                    <div className='flex gap-[10px]'>
+                                        <FaUserFriends  size={25} />
+                                        <span>Friends</span>
+                                    </div>
 
-                                Friends
-                            </div>
+                                    <IoIosArrowDown size={25}/>
+                                </a>
+                            </Dropdown>
                         </div>
 
                         <div onClick={onSubmit} className='sidebar__group  '>
@@ -146,4 +214,4 @@ export const Sidebar = () => {
             }
         </>
     )
-}
+})

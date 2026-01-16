@@ -27,21 +27,8 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:3000', 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-     allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'Cross-Origin-Opener-Policy',
-      'Cross-Origin-Embedder-Policy',
-    ],
-    exposedHeaders: ['Cross-Origin-Opener-Policy', 'Cross-Origin-Embedder-Policy'],
+    // allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
-  });
-
-  app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    next();
   });
 
   app.use(json({ limit: '50mb' }));
