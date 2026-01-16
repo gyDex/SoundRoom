@@ -2,8 +2,6 @@
     position: relative;
     width: 100%;
     padding-top: 50px;
-    max-height: 200px;
-
     display: flex;
     gap: 20px;
 
@@ -34,5 +32,45 @@
         font-weight: 700;
         position: relative;
         z-index: 10;
+    }
+
+    &__btn-delete {
+        position: relative;
+        z-index: 100;
+        width: fit-content;
+
+        display: flex;
+        gap: 5px;
+        font-size: 12px;
+        align-items: center;
+        justify-content: center;
+
+        cursor: pointer;
+
+        background-color: rgba(240, 248, 255, 0.1);
+        font-weight: 500;
+        border-radius: 15px;
+        padding-inline: 10px;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    &__btn-text {
+        display: none;
+    }
+
+
+    @media (hover:hover) {
+        &__btn-delete:hover {
+            border: 0.5px solid white;
+        }
+        
+        &__btn-delete:hover  &__btn-text {
+            display: block;
+        }
     }
 }

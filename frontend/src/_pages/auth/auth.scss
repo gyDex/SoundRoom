@@ -1,0 +1,150 @@
+.auth {
+    height: 100%;
+    padding: 20px;
+    background-color:#0f131b;
+
+    &__wrapper {
+      padding: 20px;
+      border-radius: 20px;
+      padding-inline: 25px;
+      display: flex;
+      min-height: 100%;
+      background-color:#171e29;
+    }
+    
+    &__title {
+      color: white;
+      font-size: 42px;
+      font-weight: 600;
+    }
+
+    &__line {
+      width: 100%;
+      background-color: $accent-darkness;
+      height: 2px;
+      border-radius: 10px;
+
+      margin-block: 20px;
+    }
+
+    &__description {
+      color: $login-description;
+      display: block;
+      margin-top: 5px;
+    }
+
+    &__description_login {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    &__link {
+      color: $accent-light;
+      margin-left: 10px;
+    }
+
+    &__btn {
+      width: 100%;
+      padding-inline: 5px;
+      padding-block: 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+      font-weight: 600;
+    }
+
+    &__btn_create {
+      background-color: $accent-dark;
+      margin-top: 60px;
+    }
+
+    &__btn_create {
+      background-color: $accent-dark;
+      margin-top: 40px;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    &__btn_social {
+      border: 2px solid $accent-darkness;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    &__right {
+      min-height: 100%;
+    }
+    
+    &__left {
+      margin-left: 100px;
+      width: 100%;
+      padding-block: 75px;
+      padding-right: 200px;
+      max-width: 700px;
+    }
+
+    &__input {
+      flex: 1 0 auto;
+    }
+
+    &__input-item {
+      border: 0.8px solid #bad2ff;;
+      border-radius: 5px;
+      padding-left: 0px 10px;
+      background-color: $accent-darkness;
+      position: relative;
+
+      display: flex;
+    }
+
+    &__image {
+      height: 100%;
+      object-fit: cover;
+      object-position: 90%;
+      border-radius: 10px;
+    }
+
+    @media (hover: hover) {
+        &__btn_create:hover {
+            background-color: $orange;
+        }
+    }
+
+    @media screen and (max-width: 1400px) {
+        &__right {
+          max-width: 600px;
+        }
+    }
+
+    @media screen and (max-width: 1200px) {
+        &__left, &__right {
+          width: 100%;
+          max-width: 100%;
+          padding: 0px;
+          margin: 0px;
+        }
+
+        &__left {
+          margin-top: 10px;
+        }
+
+        &__image {
+          object-position: 80%;
+          max-height: 300px;
+        }
+
+        &__wrapper {
+          flex-direction: column;
+        }
+
+        &__title {
+          font-size: 28px;
+        }
+
+        &__wrapper_login {
+          flex-direction: column-reverse;
+          justify-content: flex-end;
+        }
+    }
+}

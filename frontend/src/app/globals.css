@@ -6,7 +6,11 @@
 
   --accent: #679efe;
   --accent-dark: #4d85e8;
+  --accent-blue: #4d85e8;
   --accent-light: #93b9ff;
+  --accent-transparent: #679efe11;
+
+  --main-background: #0a0a0a;
 }
 
 @theme inline {

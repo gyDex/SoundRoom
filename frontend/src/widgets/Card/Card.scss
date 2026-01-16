@@ -32,6 +32,8 @@
 
     &__image {
         width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
     }
 
     &_large &__image {

@@ -11,9 +11,9 @@ export default function HomeLayout({
       <div className="flex w-full h-full relative ">
         <Sidebar />
 
-        <main className="w-full relative overflow-auto pt-[50px] pb-[110px]">
+        <main className="w-full relative overflow-y-auto overflow-x-hidden pt-[50px] pb-[110px]">
           <Header />
-          <div className="mx-[10px] w-[calc(100%-20px)]">
+          <div className="mx-[10px] h-full w-[calc(100%-20px)]">
             {children}
           </div>
         </main>

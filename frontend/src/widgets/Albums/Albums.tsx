@@ -14,6 +14,7 @@ import Card from '../Card/Card'
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import { Splide as SplideCore } from '@splidejs/splide';
 import { MdArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
+import Loader from '../Loader/Loader';
 
 type Props = {
     albums: IAlbum[],
@@ -79,17 +80,17 @@ export const Albums:React.FC<Props> = ({albums, nameAlbums}) => {
 
                 <div className='albums__right'>
                     <button className='albums__btn'  onClick={goPrev}>
-                        <MdArrowBackIosNew />
+                        <MdArrowBackIosNew color='white' />
                     </button>
 
                     <button className='albums__btn'  onClick={goNext}>
-                        <MdArrowForwardIos />
+                        <MdArrowForwardIos color='white' />
                     </button>
                 </div>
             </div>
 
             <div className='albums__content'>
-                <Suspense name='album' fallback={<>Loading...</>}>
+                <Suspense name='album' fallback={<Loader />}>
                     <Splide onMounted={(splide: any) => {
                         splideRef.current = splide;
                     }} options={optionsSlider} className={'w-full'} aria-label="Album">

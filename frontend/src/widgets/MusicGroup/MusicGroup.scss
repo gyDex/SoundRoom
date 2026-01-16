@@ -2,12 +2,35 @@
     margin-top: 50px;
     margin-bottom: 50px;
 
+    &__modal {
+        
+        color: white;
+
+    }
+
+    &__modal .ant-modal-title {
+        color: white;
+    }
+
+    &__modal .ant-modal-content, &__modal .ant-modal-header {
+        background-color: $background-light;
+        color: white;
+    }
+
     &__content {
         display: flex;
         gap: 30px;
         width: 100%;
     
         position: relative;
+    }
+
+    &__btn-add {
+        border-radius: 12px;
+        padding: 8px;
+        margin-left: 8px;
+        border: 2px solid white;
+        cursor: pointer;
     }
 
     &__title {
@@ -41,6 +64,18 @@
     @media (hover: hover) {
         &__btn:hover svg, &__btn:focus-within svg   {
             fill: #679efe;
+        }
+
+        &__btn-add:hover, &__btn-add:focus-within {
+            border-radius: 12px;
+            padding: 8px;
+            margin-left: 8px;
+            border: 2px solid #679efe;
+            cursor: pointer;
+        }
+
+        &__btn-add:hover svg, &__btn-add:focus-within svg {
+            fill:  #679efe;
         }
     }
 }
