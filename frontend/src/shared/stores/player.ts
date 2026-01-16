@@ -17,6 +17,11 @@ class PlayerStore {
     currentPlay: PlayElement | null = null;
     duration =  0;
 
+    currentPlaylist: any;
+    selectedPlaylist: PlayElement[] = [];
+    private indexPlaylist: number = 0;
+    private uuidTrack: string = '';
+
     currentTime = 0;
 
     audio?: string;
@@ -50,6 +55,42 @@ class PlayerStore {
         this.progressTrack = 0;
     }
 
+    //Playlist
+    selectPlaylist(playlist: PlayElement[], index: number) {
+        this.selectedPlaylist = playlist;
+        this.indexPlaylist = index;
+
+        this.currentPlaylist = playlist as any;
+    }
+
+    changeIndexPlaylist(index: number, uuidTrack: string) {
+        this.indexPlaylist = index;
+        this.uuidTrack = uuidTrack; 
+    }
+
+    subscribe(callback: () => void) {
+        const interval = setInterval(callback, 100);
+        return () => clearInterval(interval);
+    }
+
+    prevTrack() {
+        if (this.indexPlaylist === 0) return;
+        
+        this.indexPlaylist -= 1;
+        this.currentPlay = this.selectedPlaylist[this.indexPlaylist];
+        this.isPlay = true;
+    }
+
+    nextTrack() {
+        if (this.indexPlaylist === this.selectedPlaylist.length) return;
+
+        this.indexPlaylist += 1;
+        this.currentPlay = this.selectedPlaylist[this.indexPlaylist];
+        this.isPlay = true;
+    }
+
+    //Getters
+
     get current() {
         return this.currentPlay;
     }
@@ -64,6 +105,10 @@ class PlayerStore {
 
     get audioFile() {
         return this.audio;
+    }
+
+    get UUIDTrack() {
+        return this.uuidTrack;
     }
 
     get currentDuration() {

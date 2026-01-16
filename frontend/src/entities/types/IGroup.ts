@@ -1,6 +1,6 @@
 interface IGroup {
     id: string,
     name: string,
-    ulrImage: string,
+    urlImage: string,
     link: string
 }

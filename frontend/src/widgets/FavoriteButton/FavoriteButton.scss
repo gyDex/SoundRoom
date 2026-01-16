@@ -1,0 +1,22 @@
+.fav-btn {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    width: fit-content;
+
+    transition: 0.4s fill background transform scale;
+
+    &_unactive svg {
+        fill: rgba(255, 255, 255, 0.296);
+        transform: scale(1.5);
+    }
+
+    &_active svg{
+        fill: white;
+        transform: scale(2);
+    }
+}

@@ -1,46 +1,26 @@
-import Playlist from '@/app/(home)/playlist/page'
+'use client'
+
+import { useFavTracks } from '@/shared/hooks/useFavTracks'
 import { PlaylistContent, PlaylistTop } from '@/widgets'
-import MusicGroup from '@/widgets/MusicGroup/MusicGroup'
+import Loader from '@/widgets/Loader/Loader'
+import { useParams } from 'next/navigation'
 import React from 'react'
 
 export const FavoritePage = () => {
-    const testTracks = [
-        {
-            id: '1',
-            name: 'Test 1',
-            ulrImage: '/images/def.png',
-            link: '/playlist/'
-        },
-        {
-            id: '2',
-            name: 'Test 2',
-            ulrImage: '/images/def2.png',
-            link: '/playlist/'
-        },
-        {
-            id: '3',
-            name: 'Test 2',
-            ulrImage: '/images/def.png',
-            link: '/playlist/'
-        },
-        {
-            id: '4',
-            name: 'Test 2',
-            ulrImage: '/images/def2.png',
-            link: '/playlist/'
-        },
-        {
-            id: '5',
-            name: 'Test 2',
-            ulrImage: '/images/default2.png',
-            link: '/playlist/'
-        }
-    ] as IGroup[]
+
+    const {data: favorites, isLoading} = useFavTracks();
+
+    const { id } = useParams() as any;
 
     return (
         <>
-            <PlaylistTop name='Избранное' />
-            <PlaylistContent  />  
+            <PlaylistTop id={id} isActiveDeleteBtn={false} imageUrl='/images/favorite.png' name='Избранное' />
+            {
+                !isLoading ?
+                    <PlaylistContent items={favorites}  />
+                :  
+                <Loader />
+            }
         </>
     )
 }
