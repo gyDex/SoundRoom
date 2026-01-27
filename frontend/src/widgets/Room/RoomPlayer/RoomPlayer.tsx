@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import './RoomPlayer.scss'
-import { useState } from 'react'
 import { playerStore } from '@/shared/stores/player'
 import { observer } from 'mobx-react-lite'
 

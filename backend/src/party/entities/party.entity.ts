@@ -1,16 +1,23 @@
   import { User } from "../../auth/entities/user.entity";
-  import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
+  import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
   @Entity('party')
   export class PartyEntity {
-    @PrimaryColumn()
-    id: string; // roomId (uuid / nanoid)
+    @PrimaryGeneratedColumn('uuid')
+    id: string; 
 
     @Column()
     hostId: string;
 
     @Column({ default: false })
     isPrivate: boolean;
+
+    @Column({
+      type: 'enum',
+      enum: ['active', 'closed'],
+      default: 'active',
+    })
+    status: 'active' | 'closed';
 
     @Column({ nullable: true })
     password?: string;

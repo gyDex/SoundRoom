@@ -1,6 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query";
-import graphQLClient from "../lib/graphql-client";
-import { CREATE_PLAYLIST } from "../lib/graphql/playlist";
+import graphQLClient from "@/shared/lib/graphql-client";
+import { CREATE_PLAYLIST } from "@/shared/lib/graphql/playlist";
 
 export async function createPlaylist(values: {
     userId: string,

@@ -197,7 +197,7 @@ class PlayerStore {
             return;
         }
         console.log('applyServerState')
-        this.currentPlay = state.audio
+        this.currentPlay = state.audio;
         this.isPlay = state.isPlaying;
         this.serverPosition = state.position;
         this.progressTrack = state.position;

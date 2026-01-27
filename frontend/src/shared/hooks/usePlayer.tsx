@@ -6,6 +6,7 @@ type PlayElement = {
     duration: Date,
     album: string,
     group: string,
+    urlFile: string;
 }
 
 export function usePlayer () {

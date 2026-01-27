@@ -202,6 +202,10 @@
             animation-play-state: paused;
         }
     }
+
+    @media screen and (max-width: 1440px) {
+        margin-left: 25px;
+    }
 }
 
 // Анимация вращения пластинки

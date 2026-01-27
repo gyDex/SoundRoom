@@ -1,34 +1,77 @@
 'use client';
 
-import { createContext, useContext, useRef } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '@/shared/lib/graphql/useAuth';
+import { roomStore } from '../stores/room.store';
+import { playerStore } from '../stores/player';
 
 const SocketContext = createContext<Socket | null>(null);
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  const socketRef = useRef<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  
 
-  if (!socketRef.current && user?.id) {
-    socketRef.current = io(process.env.NEXT_PUBLIC_WS_URL!, {
-      transports: ['polling', 'websocket'],
-      auth: {
-        userId: user.id,
-      },
+  useEffect(() => {
+    console.log('user.id',user?.id)
+
+    if (!user?.id) return;
+
+    const s = io(process.env.NEXT_PUBLIC_WS_URL!, {
+      transports: ['websocket'],
+      auth: { userId: user.id },
     });
 
-    socketRef.current.on('connect', () => {
-      console.log('✅ GLOBAL SOCKET CONNECTED', socketRef.current?.id);
+    setSocket(s);
+
+    s.on('connect', () => {
+      console.log('✅ SOCKET CONNECTED', s.id);
+
+      const activeRoomId = localStorage.getItem('activeRoomId')?.replace('#', '');
+
+      console.log(activeRoomId)
+      if (activeRoomId) {
+      console.log('🟢 join-room');
+
+        s?.emit('join-room', {
+            roomId: activeRoomId,
+            password: '',
+        });
+      }
     });
 
-    socketRef.current.on('disconnect', (reason) => {
-      console.log('❌ GLOBAL SOCKET DISCONNECTED', reason);
+    s.on('room-joined', ({ roomId, isHost, state }) => {
+      console.log('🟢 room-joined payload', state);
+      console.log('🟢 isHost', user.id === state.hostId);
+
+      localStorage.setItem('activeRoomId', roomId)
+      roomStore.changeRoom(state);
+      playerStore.applyServerState({
+        isPlaying:state.isPlaying,
+        position:state.position,
+        audio:state.audio,
+        updatedAt:state.updatedAt,
+      })
+      playerStore.joinRoom(state.id, user.id === state.hostId);
     });
-  }
+
+    s.on('room-deleted', ({ roomId }) => {
+      if (roomStore.currentRoom?.id === roomId) {
+        roomStore.clearRoom();
+        playerStore.leaveRoom();
+        localStorage.removeItem('activeRoomId');
+      }
+    });
+
+    return () => {
+      s.disconnect();
+      setSocket(null);
+    };
+  }, [user?.id]);
 
   return (
-    <SocketContext.Provider value={socketRef.current}>
+    <SocketContext.Provider value={socket}>
       {children}
     </SocketContext.Provider>
   );

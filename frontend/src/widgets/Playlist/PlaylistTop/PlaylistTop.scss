@@ -47,10 +47,12 @@
 
         cursor: pointer;
 
-        background-color: rgba(240, 248, 255, 0.1);
+        background-color: rgba(240, 248, 255, 0.05);
         font-weight: 500;
         border-radius: 15px;
-        padding-inline: 10px;
+
+        color: rgb(255, 255, 255, 0.5);
+        transition: 0.4s color;
     }
 
     &__content {
@@ -66,7 +68,8 @@
 
     @media (hover:hover) {
         &__btn-delete:hover {
-            border: 0.5px solid white;
+            color: white;
+            // border: 0.5px solid white;
         }
         
         &__btn-delete:hover  &__btn-text {

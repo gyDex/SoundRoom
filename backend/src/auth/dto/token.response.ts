@@ -13,4 +13,7 @@ export class TokenResponse {
 
   @Field(() => String, { description: 'Type of token', defaultValue: 'Bearer' })
   tokenType?: string;
+
+  @Field({ nullable: true })
+  twoFactorRequired?: boolean;
 }

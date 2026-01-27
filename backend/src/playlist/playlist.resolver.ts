@@ -6,6 +6,7 @@ import { Playlist } from 'src/track/entities/playlist.entity';
 import { TrackService } from 'src/track/track.service';
 import { Track } from 'src/track/entities/track.entity';
 import { DeletePlaylistInput } from './dto/delete-playlist.input';
+import { EditPlaylistInput } from './dto/edit-playlist.input';
 
 @Resolver(() => Playlist)
 export class PlaylistResolver {
@@ -23,8 +24,6 @@ export class PlaylistResolver {
     if (!playlist.trackIds || playlist.trackIds.length === 0) {
       return [];
     }
-    
-    console.log('Loading tracks for playlist:', playlist.id, playlist.trackIds);
     return this.trackService.findByIds(playlist.trackIds);
   }
 
@@ -32,7 +31,6 @@ export class PlaylistResolver {
   async findByUserId(@Args('userId', { type: () => ID }) userId: string) { 
     return this.playlistService.findByUserID(userId);
   }
-
 
   @Query(() => Playlist, { name: 'playlist' })
   async findOne(@Args('id', { type: () => ID }) id: string) { 
@@ -51,6 +49,13 @@ export class PlaylistResolver {
     @Args('createPlaylistInput') createPlaylistInput: CreatePlaylistInput
   ): Promise<Playlist> {
     return this.playlistService.create(createPlaylistInput);
+  }
+
+  @Mutation(() => Playlist, { name: 'editPlaylist' })
+  async editPlaylist(
+    @Args('editPlaylistInput') editPlaylistInput: EditPlaylistInput
+  ): Promise<Playlist> {
+    return this.playlistService.edit(editPlaylistInput);
   }
 
   @Mutation(() => Playlist, { name: 'deletePlaylist' })
