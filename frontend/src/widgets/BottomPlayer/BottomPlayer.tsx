@@ -8,17 +8,15 @@ import { observer } from 'mobx-react-lite'
 import { playerStore } from '@/shared/stores/player'
 import { conversionToTime } from '@/features/ConversionToTime';
 
-import { useAuth } from "@/shared/lib/graphql/useAuth";
 import { useSocket } from "@/shared/providers/SocketProvider";
 import { roomStore } from "@/shared/stores/room.store";
-import { toJS } from "mobx";
 
 export const BottomPlayer = observer(() => {
   const [volume, setVolume] = useState(10);  
   const audioRef = useRef<HTMLAudioElement>(null);
   const socket = useSocket();
 
-  const { user }  = useAuth() as any;
+  const isSeekingRef = useRef(false);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -26,31 +24,55 @@ export const BottomPlayer = observer(() => {
     }
   },[])
 
-  useEffect(() => {
-    if (!playerStore.isRoom) return;
-    if (!playerStore.isHost) return;
-    if (!playerStore.currentPlay) return;
+useEffect(() => {
+  if (!playerStore.isRoom) return;
+  if (!playerStore.isHost) return;
 
-    const audio = audioRef.current;
-    if (!audio) return;
+  const audio = audioRef.current;
+  const track = playerStore.currentPlay;
+  if (!audio || !track?.audio) return;
 
-    audio.src = playerStore.currentPlay.audio || '';
-    audio.currentTime = 0;
+  // audio.pause();
+  audio.src = track.audio;
+  audio.currentTime = 0;
 
-    socket?.emit('change-track', {
-      roomId: roomStore.currentRoom?.id,
-      audio: playerStore.currentPlay,
-      duration: audio.duration || 0,
+  playerStore.setProgress(0);
+  playerStore.setCurrentTime(0);
+
+  socket?.emit('change-track', {
+    roomId: roomStore.currentRoom?.id,
+    audio: track,
+    position: 0,
+    isPlaying: playerStore.IsPlay,
+    duration: audio.duration || 0,
+    updatedAt: Date.now(),
+  });
+}, [playerStore.currentPlay?.id]);
+
+useEffect(() => {
+  if (!playerStore.isRoom) return;
+  if (!playerStore.isHost) return;
+  if (!playerStore.currentPlay) return;
+
+  const audio = audioRef.current;
+  if (!audio) return;
+
+  audio.src = playerStore.currentPlay.audio;
+  // audio.currentTime = 0;
+
+  if (playerStore.IsPlay) {
+    audio.play().catch(() => {
+      // playerStore.pause();
     });
+  }
 
-  }, [playerStore.currentPlay?.id]);
+}, [playerStore.currentPlay?.id, playerStore.isRoom, playerStore.isHost]);
+
 
   useEffect(() => {
     if (!socket) return;
 
     const handler = (state: any) => {
-      console.log(state, 'change-track')
-
       if (playerStore.isHost) return;
 
       const audio = audioRef.current;
@@ -58,44 +80,26 @@ export const BottomPlayer = observer(() => {
 
       playerStore.applyServerState(state);
 
+      // audio.pause();
+
+      console.log(state, 'change-track')
       audio.src = state.audio.audio;
-      audio.currentTime = state.position || 0;
+      audio.currentTime = 0;
+
+      playerStore.setProgress(0);
+      playerStore.setCurrentTime(0);
+
       if (state.isPlaying) {
-        audio.play();
+        audio.play().catch(() => {});
       }
     };
 
     socket.on('change-track', handler);
-    return () =>  {socket.off('change-track', handler)};
+    return () => { socket.off('change-track', handler); }
   }, [socket, playerStore.isHost]);
 
-
   useEffect(() => {
-      if (!socket) return;
 
-      const onJoined = ({ roomId, isHost, state }: any) => {
-          console.log(state, 'joined')
-
-          playerStore.joinRoom(roomId, isHost);
-          roomStore.changeRoom(toJS(state));
-          playerStore.applyServerState(state);
-          const audio = audioRef.current as any;
-          
-          if (audio && playerStore.currentPlay) {
-            audio.src = playerStore.currentPlay?.audio;
-            playerStore.setDuration(state.duration)
-            handlePlayPause();
-          }
-      };
-
-    socket.on('room-joined', onJoined);
-
-    return () => {
-        socket.off('room-joined', onJoined);
-    };
-  }, [socket, playerStore.currentPlay?.audio]);
-
-  useEffect(() => {
     if (!socket) return;
 
     socket.on('connect', () => {
@@ -109,42 +113,127 @@ export const BottomPlayer = observer(() => {
     socket.on('connect_error', (err) => {
       console.error('❌ CONNECT ERROR', err.message);
     });
+  
   }, [socket]);
 
-useEffect(() => {
-  if (!socket || !playerStore.isRoom) return;
+  // useEffect(() => {
+  //   if (!playerStore.isRoom) return;
+  //   if (playerStore.isHost) return;
 
-  const audio = audioRef.current;
-  if (!audio) return;
+  //   const audio = audioRef.current;
+  //   if (!playerStore.currentPlay?.audio) return;
 
-  const handler = (state: any) => {
-    console.log(state)
-    
-    console.log('sync-state received:', state);
+  //   console.log('state', playerStore)
 
-    playerStore.applyServerState(state);
+  //   audio.src = playerStore.currentPlay?.audio;
+  //   audio.currentTime = playerStore.progress;
 
-    const expected = state.position + (Date.now() - state.updatedAt) / 1000;
+  //   // if (playerStore.isPlaying) {
+  //   //   audio.play().catch(() => {});
+  //   // } else {
+  //   //   audio.pause();
+  //   // }
+  // }, [
+  //   playerStore.isRoom,
+  //   playerStore.isHost,
+  //   playerStore.currentPlay?.audio,
+  //   playerStore.progress,
+  //   playerStore.audio
+  // ]);
 
-    if (Math.abs(audio.currentTime - expected) > 1.2) {
-      audio.currentTime = expected;
-    }
+  // useEffect(() => {
+  //   if (!playerStore.isRoom) return;
 
-    // ОБНОВЛЕНИЕ: Управление воспроизведением
-    if (state.isPlaying && audio.paused) {
-      audio.play().catch(e => console.error('Play error:', e));
-    } else if (!state.isPlaying && !audio.paused) {
-      audio.pause();
-    }
+  //   const audio = audioRef.current;
+  //   if (!audio) return;
 
-    // Обновляем UI
-    playerStore.setCurrentTime(expected);
-    playerStore.setProgress((expected / state.duration) * 100);
-  };
+  //   audio.src = playerStore.currentPlay?.audio;
+  //   audio.currentTime = playerStore.progressTrack;
 
-  socket.on('sync-state', handler);
-  return () => { socket.off('sync-state', handler); };
-}, [socket, playerStore.isRoom]);
+  //   if (playerStore.isPlay) {
+  //     audio.play().catch(() => {});
+  //   }
+  // }, [playerStore.isRoom, playerStore.progressTrack]);
+
+  // useEffect(() => {
+  //   if (!playerStore.isRoom) return;
+  //   if (playerStore.isHost) return;
+
+  //   const audio = audioRef.current;
+  //   if (!audio || !playerStore.audio) return;
+
+  //   if (!audio.src) return;
+
+  //   audio.src = playerStore.currentPlay?.audio;
+  //   audio.currentTime = playerStore.progressTrack;
+
+  //   if (playerStore.isPlay) {
+  //     audio.play().catch(() => {});
+  //   } else {
+  //     audio.pause();
+  //   }
+  // }, [
+  //   playerStore.isRoom,
+  //   playerStore.isHost,
+  //   playerStore.currentPlay?.audio,
+  //   playerStore.progressTrack
+  // ]);
+
+//   useEffect(() => {
+//   if (!playerStore.isRoom) return;
+//   if (playerStore.isHost) return;
+
+//   const audio = audioRef.current;
+//   if (!audio) return;
+
+//   const interval = setInterval(() => {
+//     if (!audio.duration) return;
+
+//     playerStore.setCurrentTime(audio.currentTime);
+//     playerStore.setProgress(
+//       (audio.currentTime / audio.duration) * 100
+//     );
+//   }, 300); // 3–4 раза в секунду достаточно
+
+//   return () => clearInterval(interval);
+// }, [playerStore.isRoom, playerStore.isHost]);
+
+  useEffect(() => {
+    if (!socket || !playerStore.isRoom) return;
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handler = (state: any) => {
+      if (playerStore.isHost) return;
+
+      console.log(state)
+      
+      console.log('sync-state received:', state);
+
+      playerStore.applyServerState(state);
+
+      const expected = state.position + (Date.now() - state.updatedAt) / 1000;
+
+      if (Math.abs(audio.currentTime - expected) > 1.2) {
+        audio.currentTime = expected;
+      }
+
+      // ОБНОВЛЕНИЕ: Управление воспроизведением
+      if (state.isPlaying && audio.paused) {
+        audio.play().catch(e => console.error('Play error:', e));
+      } else if (!state.isPlaying && !audio.paused) {
+        audio.pause();
+      }
+
+      // Обновляем UI
+      playerStore.setCurrentTime(expected);
+      playerStore.setProgress((expected / state.duration) * 100);
+    };
+
+    socket.on('sync-state', handler);
+    return () => { socket.off('sync-state', handler); };
+  }, [socket, playerStore.isRoom]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -156,11 +245,11 @@ useEffect(() => {
     playerStore.setProgress(value);
 
     if (playerStore.isRoom && playerStore.isHost) {
+      console.log('seek')
+
       socket?.emit('seek', {
         roomId: roomStore.currentRoom?.id,
-        userId: user.id,
         position: newTime,
-        audio: playerStore.currentPlay,
         duration: playerStore.duration,
       });
     }
@@ -189,13 +278,13 @@ useEffect(() => {
       return;
     }
 
-    // if (!playerStore.isHost) return;
+    if (!playerStore.isHost) return;
 
     const position = audio.currentTime;
 
     if (playerStore.IsPlay) {
       playerStore.pause();
-      audio.pause();
+      // audio.pause();
 
       console.log('pause');
 
@@ -246,8 +335,10 @@ useEffect(() => {
   }, [playerStore.isPlay]);
 
   useEffect(() => {
+    if (playerStore.isRoom && !playerStore.isHost) return; 
+
     const audio = audioRef.current;
-    if (!audio || !playerStore.currentPlay) return;
+    if (!audio || !playerStore.currentPlay?.audio) return;
 
     audio.src = playerStore.currentPlay.audio;
     audio.currentTime = 0;
@@ -261,17 +352,15 @@ useEffect(() => {
 
     const audio = audioRef.current as any;
 
-    // if (audio && playerStore.currentPlay) {
-    //   playerStore.setProgress(0);
-    //   playerStore.setCurrentTime(0);
-    //   audio.currentTime = (playerStore.progress / 100) * playerStore.duration;
+    if (audio && playerStore.currentPlay) {
+      audio.currentTime = (playerStore.progress / 100) * playerStore.duration;
 
-    //   if (playerStore.currentPlay?.audio) {
-    //     audio.src = playerStore.currentPlay?.audio;
-    //   }
-    // }
+      if (playerStore.currentPlay?.audio) {
+        audio.src = playerStore.currentPlay?.audio;
+      }
 
-    playAudio();
+      playAudio();
+    }
 
     if (audio) {
       const handleTimeUpdate = () => {
@@ -293,6 +382,7 @@ useEffect(() => {
             (playerStore.progress / 100) * audio.duration;
         }
       };
+
       const handleEnded = () => {
         playerStore.pause();
         playerStore.setProgress(0);
@@ -311,6 +401,8 @@ useEffect(() => {
     }
   }, [playerStore.current?.id]);
 
+  console.log(playerStore)
+
   return (
     <>
       <audio
@@ -319,7 +411,7 @@ useEffect(() => {
         onError={(e) => console.error('Audio element error:', e)}
       />
       {
-        playerStore?.current?.audio &&
+        playerStore?.currentPlay?.audio &&
         <section className='bottom-player'>
           <div className='bottom-player__left'>
             <Image 
@@ -330,11 +422,18 @@ useEffect(() => {
               src={playerStore.current?.image || '/default-cover.jpg'} 
             />
 
-            <div className='bottom-player__left-wrap'>
-              <h2 className='bottom-player__title'>
+            <div className="bottom-player__left-wrap">
+              <h2
+                key={playerStore.current?.id}
+                className="track-title animate-slide-up"
+              >
                 {playerStore.current?.name || 'Unknown Track'}
               </h2>
-              <span className='bottom-player__description'>
+
+              <span
+                key={playerStore.current?.id + '-artist'}
+                className="track-artist animate-slide-up"
+              >
                 {playerStore.current?.group || 'Unknown Artist'}
               </span>
             </div>
@@ -376,12 +475,14 @@ useEffect(() => {
                 min={0}
                 max={100}
                 value={playerStore.progress}
-
+                disabled={!playerStore.isHost && playerStore.isRoom}
                 onMouseDown={() => {
+                  isSeekingRef.current = true;
                   if (!playerStore.isRoom) playerStore.setIsPlay(false);
                 }}
 
                 onMouseUp={() => {
+                  isSeekingRef.current = true;
                   if (!playerStore.isRoom) playerStore.setIsPlay(true);
                 }}
 
@@ -405,7 +506,6 @@ useEffect(() => {
 
           <div className='bottom-player__right'>
             <div className='flex items-center gap-[10px]'>
-
               <button className=''>
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20.88 9.315H23.67L21.885 11.025C21.8147 11.0947 21.7589 11.1777 21.7208 11.2691C21.6828 11.3605 21.6632 11.4585 21.6632 11.5575C21.6632 11.6565 21.6828 11.7545 21.7208 11.8459C21.7589 11.9373 21.8147 12.0203 21.885 12.09C21.9552 12.1649 22.0399 12.2247 22.1341 12.2655C22.2283 12.3063 22.3299 12.3274 22.4325 12.3274C22.5352 12.3274 22.6367 12.3063 22.7309 12.2655C22.8251 12.2247 22.9098 12.1649 22.98 12.09L26.0775 9.09C26.1504 9.02223 26.209 8.94065 26.25 8.85C26.2952 8.75644 26.3186 8.65389 26.3186 8.55C26.3186 8.4461 26.2952 8.34355 26.25 8.25C26.2158 8.15538 26.1592 8.07045 26.085 8.0025L22.9875 5.0025C22.8385 4.86167 22.6413 4.7832 22.4363 4.7832C22.2312 4.7832 22.034 4.86167 21.885 5.0025C21.8147 5.07222 21.7589 5.15517 21.7208 5.24656C21.6828 5.33796 21.6632 5.43599 21.6632 5.535C21.6632 5.63401 21.6828 5.73203 21.7208 5.82343C21.7589 5.91482 21.8147 5.99777 21.885 6.0675L23.67 7.785H20.88C19.9782 7.76911 19.082 7.93116 18.2428 8.26189C17.4037 8.59262 16.6379 9.08554 15.9894 9.71246C15.3409 10.3394 14.8223 11.088 14.4634 11.9155C14.1044 12.743 13.9122 13.6331 13.8975 14.535C13.8858 15.2363 13.736 15.9284 13.4568 16.5718C13.1775 17.2152 12.7743 17.7973 12.27 18.2848C11.7658 18.7723 11.1704 19.1558 10.518 19.4132C9.86555 19.6706 9.16879 19.7969 8.4675 19.785H4.5825C4.38359 19.785 4.19283 19.864 4.05217 20.0047C3.91152 20.1453 3.8325 20.3361 3.8325 20.535C3.8325 20.7339 3.91152 20.9247 4.05217 21.0653C4.19283 21.206 4.38359 21.285 4.5825 21.285H8.4675C10.2883 21.3151 12.0466 20.621 13.3559 19.3553C14.6652 18.0896 15.4184 16.3558 15.45 14.535C15.4815 13.1239 16.0704 11.7827 17.0879 10.8046C18.1054 9.8264 19.4688 9.29086 20.88 9.315ZM4.5825 9.315H8.4675C9.33651 9.30896 10.1945 9.50987 10.9705 9.90112C11.7464 10.2924 12.4181 10.8627 12.93 11.565C13.1244 11.0391 13.3759 10.5361 13.68 10.065C13.0086 9.34664 12.1952 8.77568 11.2914 8.38835C10.3877 8.00102 9.41324 7.80577 8.43 7.815H4.5825C4.38359 7.815 4.19283 7.89401 4.05217 8.03467C3.91152 8.17532 3.8325 8.36608 3.8325 8.565C3.8325 8.76391 3.91152 8.95467 4.05217 9.09533C4.19283 9.23598 4.38359 9.315 4.5825 9.315Z" fill="#838383"/>
@@ -421,7 +521,7 @@ useEffect(() => {
             </div>
 
             <div className='flex items-center gap-[10px]'>
-              <button onClick={handleVolumeClick} className=''>
+              <button onClick={handleVolumeClick}>
                 {
                   volume !== 0 ?
                   <HiVolumeUp  color='white'  size={28}/> :

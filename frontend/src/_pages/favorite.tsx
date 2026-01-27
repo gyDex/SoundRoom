@@ -15,12 +15,12 @@ export const FavoritePage = () => {
     return (
         <>
             <PlaylistTop id={id} isActiveDeleteBtn={false} imageUrl='/images/favorite.png' name='Избранное' />
-            {
+            {/* {
                 !isLoading ?
                     <PlaylistContent items={favorites}  />
                 :  
                 <Loader />
-            }
+            } */}
         </>
     )
 }

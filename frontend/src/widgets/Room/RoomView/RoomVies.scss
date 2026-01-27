@@ -27,7 +27,6 @@
 
     &__table {
         width: 100%;
-        max-width: 600px;
     }
 
     &__description {
@@ -40,13 +39,19 @@
 
     &__list-username {
         display: flex;
+        flex-direction: column;
+        gap: 5px;
     }
 
-    @media screen and (min-width: 1200px) {
+    @media screen and (min-width: 1440px) {
         &__list {
             display: flex;
             width: 100%;
             gap: 50px;
+        }
+
+        &__table {
+            max-width: 600px;
         }
     }
 }

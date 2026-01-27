@@ -1,6 +1,5 @@
 'use client'
 
-import { getPlaylistByID } from "@/shared/hooks/usePlaylistById"
 import graphQLClient from "@/shared/lib/graphql-client"
 import { GET_PLAYLIST_BY_ID } from "@/shared/lib/graphql/playlist"
 import { PlaylistContent, PlaylistTop } from "@/widgets"
@@ -35,11 +34,9 @@ export const PlaylistPage = () => {
   if (isLoading) return <Loader />;
   if (error) return <div>Error loading playlist</div>;
 
-  console.log(data, 'data')
-
   return (
     <>
-      <PlaylistTop id={id} imageUrl={data?.playlist?.imageUrl ?? ''} name={data?.playlist?.name ?? ''}/>
+      <PlaylistTop tracks={data?.playlist?.tracks ?? []}  id={id} imageUrl={data?.playlist?.imageUrl ?? ''} name={data?.playlist?.name ?? ''}/>
       <PlaylistContent items={data?.playlist?.tracks ?? []} />
     </>
   )

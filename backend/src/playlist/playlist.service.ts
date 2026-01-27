@@ -5,13 +5,13 @@ import { In, Repository } from 'typeorm';
 import { CreatePlaylistInput } from './dto/create-playlist.input';
 import { Track } from 'src/track/track.entity';
 import { DeletePlaylistInput } from './dto/delete-playlist.input';
+import { EditPlaylistInput } from './dto/edit-playlist.input';
 
 @Injectable()
 export class PlaylistService {
     constructor(
         @InjectRepository(Playlist)
         private playlistRes: Repository<Playlist>,
-
     ) {}
 
     async findAll(): Promise<Playlist[]> {
@@ -32,8 +32,17 @@ export class PlaylistService {
     }
 
     async create(createPlaylistInput: CreatePlaylistInput): Promise<Playlist> {
-        const playlist = this.playlistRes.create(createPlaylistInput);
+        const playlist = await this.playlistRes.create(createPlaylistInput);
         return await this.playlistRes.save(playlist);
+    }
+
+    async edit(editPlaylistInput: EditPlaylistInput): Promise<Playlist> {
+        try {
+            await this.playlistRes.update(editPlaylistInput.id, editPlaylistInput);
+            return this.playlistRes.findOneOrFail({ where: { id: editPlaylistInput.id } });
+        } catch (error) {
+            return error;   
+        }
     }
 
     async delete(deletePlaylistInput: DeletePlaylistInput): Promise<Playlist>  {

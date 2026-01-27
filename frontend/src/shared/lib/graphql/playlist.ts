@@ -90,6 +90,32 @@ export const GET_USER_PLAYLISTS = gql`
 
 
 
+export const EDIT_PLAYLIST = gql`
+  mutation EditPlaylist(
+    $id: ID!
+    $userId: ID!
+    $name: String!
+    $imageUrl: String
+    $trackIds: [ID!]
+  ) {
+    editPlaylist(editPlaylistInput: {
+      id: $id
+      userId: $userId
+      name: $name
+      imageUrl: $imageUrl
+      trackIds: $trackIds
+    }) {
+      id
+      name
+      userId
+      imageUrl 
+      trackIds
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const CREATE_PLAYLIST = gql`
   mutation CreatePlaylist(
     $userId: ID!

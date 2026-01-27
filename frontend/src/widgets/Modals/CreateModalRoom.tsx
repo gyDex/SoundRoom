@@ -84,13 +84,13 @@ export const CreateModalRoom: React.FC<Props> = ({ IsModalOpen, setIsModalOpen }
 
     return (
         <Modal 
-        className={'music-group__modal'}
-        title="Create Room" 
-        open={IsModalOpen ?? false} 
-        onOk={handleOk} 
-        onCancel={handleCancel}
-        footer={false}
-        confirmLoading={loading}
+            className={'music-group__modal'}
+            title="Create Room" 
+            open={IsModalOpen ?? false} 
+            onOk={handleOk} 
+            onCancel={handleCancel}
+            footer={false}
+            confirmLoading={loading}
         >
         <Form
             form={form} // Привязываем form instance
@@ -112,7 +112,7 @@ export const CreateModalRoom: React.FC<Props> = ({ IsModalOpen, setIsModalOpen }
             <Form.Item
             label="Room Name"
             name="name"
-            
+            className=''
             rules={[
                 { required: true, message: 'Please input room name!' },
                 { min: 3, message: 'Name must be at least 3 characters' },
@@ -130,6 +130,7 @@ export const CreateModalRoom: React.FC<Props> = ({ IsModalOpen, setIsModalOpen }
             <Form.Item
             label="Description"
             name="description"
+            className=''
             rules={[
                 { max: 200, message: 'Description must be less than 200 characters' }
             ]}
@@ -145,6 +146,7 @@ export const CreateModalRoom: React.FC<Props> = ({ IsModalOpen, setIsModalOpen }
             <Form.Item
             label="Max Users"
             name="maxUsers"
+            className=''
             normalize={(value) => Number(value) || 0}
             rules={[
                 { required: true, message: 'Please input max users count!' },
@@ -185,6 +187,7 @@ export const CreateModalRoom: React.FC<Props> = ({ IsModalOpen, setIsModalOpen }
                 { min: 4, message: 'Password must be at least 4 characters' }
                 ]}
                 validateTrigger={['onChange', 'onBlur']}
+                
             >
                 <Input.Password 
                 placeholder="Enter password" 

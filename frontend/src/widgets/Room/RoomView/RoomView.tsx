@@ -9,6 +9,7 @@ import { observer } from 'mobx-react-lite';
 import { useSocket } from '@/shared/providers/SocketProvider';
 import { RoomPlayer } from '../RoomPlayer/RoomPlayer';
 import { playerStore } from '@/shared/stores/player';
+import { FaRegCopy } from 'react-icons/fa';
 
 interface UserRow {
   id: string;
@@ -56,16 +57,18 @@ export const RoomView = observer(() => {
       render: (value, record: UserRow) => (
         <div className='room-view__list-username'>
           <span>{value}</span>
-          {roomStore.hostId === record.id && (
-            <Tag className='!ml-[10px]' color='blue' >
-              Admin
-            </Tag>
-          )}
-          {user?.id === record.id && (
-            <Tag className='!ml-[10px]' color='green'>
-              You
-            </Tag>
-          )}
+          <div className='flex gap-[2.5px]'>
+            {roomStore.hostId === record.id && (
+              <Tag className='' color='blue' >
+                Admin
+              </Tag>
+            )}
+            {user?.id === record.id && (
+              <Tag className='' color='green'>
+                You
+              </Tag>
+            )}
+          </div>
         </div>
       ),
     },
@@ -118,7 +121,9 @@ export const RoomView = observer(() => {
   }, [isAdmin, baseColumns, adminColumn]);
 
   const onDelete = (userID: string) => {
-    console.log('leave-room')
+    console.log('leave-room');
+
+    localStorage.removeItem('lastRoomId');
 
     socket?.emit('leave-room', {
       roomId: roomStore.currentRoom?.id,
@@ -126,7 +131,7 @@ export const RoomView = observer(() => {
     });
   }
   
-  const { data: data, refetch, isLoading } = useRoomUsers(roomStore.currentRoom?.id);
+  const { data: data, isLoading } = useRoomUsers(roomStore.currentRoom?.id);
 
   useEffect(() => {
     if (data?.hostId && data?.hostId !== '') {
@@ -137,6 +142,18 @@ export const RoomView = observer(() => {
   const onChange: TableProps<UserRow>['onChange'] = (pagination, filters, sorter, extra) => {
     console.log('params', pagination, filters, sorter, extra);
   };
+
+  const handleCopyTag = (): void => {
+    if (user?.username && user?.tag) {
+      const fullTag = `#${roomStore.currentRoom?.id}`;
+      navigator.clipboard.writeText(fullTag)
+        .then(() => {
+        })
+        .catch(err => {
+          console.error('Ошибка при копировании:', err);
+        });
+    }
+  }
   
   return (
     <section className='room-view'>
@@ -146,8 +163,12 @@ export const RoomView = observer(() => {
                   {roomStore.currentRoom?.name}
               </h2>
 
-              <Tag key={'blue'} color={'blue'}>
-                #{roomStore.currentRoom?.id}
+              <Tag className='!flex justify-center items-center gap-[10px]' key={'blue'} color={'blue'}>
+                <span className='block'>
+                  #{roomStore.currentRoom?.id}
+                </span>
+
+                <button onClick={handleCopyTag} className='cursor-pointer'><FaRegCopy size={16} /></button>
               </Tag>
             </div>
 
@@ -164,7 +185,6 @@ export const RoomView = observer(() => {
 
         <div className='room-view__content'>
             <p className='room-view__description'>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci, ipsum sequi, quos explicabo aliquid vel libero facilis ipsam, quo alias magni quibusdam sunt beatae voluptatibus cum. Aut non vero natus.
                 {roomStore.currentRoom?.description}
             </p>
         </div>

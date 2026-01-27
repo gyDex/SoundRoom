@@ -7,8 +7,8 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import { Splide as SplideCore } from '@splidejs/splide';
 import Card from '../Card/Card';
 import { FaPlus } from 'react-icons/fa';
-import CreateModalPlaylist from '../Modals/CreateModalPlaylist';
 import Loader from '../Loader/Loader';
+import PlaylistModal from '../Modals/PlaylistModal';
 
 type Props = {
     items: IGroup[],
@@ -75,7 +75,7 @@ const MusicGroup:React.FC<Props> = ({setIsModalOpen,variation, IsModalOpen, item
 
     return (
         <section className='music-group'>
-            <CreateModalPlaylist IsModalOpen={IsModalOpen} setIsModalOpen={setIsModalOpen} />
+            <PlaylistModal IsModalOpen={IsModalOpen} setIsModalOpen={setIsModalOpen} />
 
             <div className='music-group__top'>
                 <h1 className='music-group__title'>
