@@ -11,4 +11,7 @@ export class LoginInput {
   @IsNotEmpty()
   @MinLength(6)
   password: string;
+
+  @Field({ nullable: true })
+  otp?: string;
 }

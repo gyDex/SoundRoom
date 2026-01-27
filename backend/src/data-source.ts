@@ -14,6 +14,10 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false,
   },
+  
+  extra: {
+    max: 10
+  },
 
   synchronize: false,
   logging: true,

@@ -105,6 +105,29 @@
       border-radius: 10px;
     }
 
+    .otp-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+
+      .ant-otp  {
+        gap: 10px;
+      }
+
+      .ant-otp-input {
+        border: 0.8px solid #bad2ff;;
+        border-radius: 5px;
+        padding: 20px 5px;
+        background-color: $accent-darkness;
+        position: relative;
+
+        display: flex;
+
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+
     @media (hover: hover) {
         &__btn_create:hover {
             background-color: $orange;

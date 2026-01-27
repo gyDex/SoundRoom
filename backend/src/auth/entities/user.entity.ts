@@ -62,4 +62,10 @@ User {
     lazy: true, 
   })
   parties: Promise<PartyEntity[]>;
+
+  @Column({ nullable: true })
+  twoFactorSecret?: string;
+
+  @Column({ default: false })
+  twoFactorEnabled: boolean;
 }

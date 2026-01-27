@@ -1,0 +1,24 @@
+type Setting {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input CreateSettingInput {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input UpdateSettingInput {
+  id: Int!
+}
+
+type Query {
+  settings: [Setting]!
+  setting(id: Int!): Setting
+}
+
+type Mutation {
+  createSetting(createSettingInput: CreateSettingInput!): Setting!
+  updateSetting(updateSettingInput: UpdateSettingInput!): Setting!
+  removeSetting(id: Int!): Setting
+}
