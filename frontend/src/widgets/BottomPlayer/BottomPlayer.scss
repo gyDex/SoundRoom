@@ -142,4 +142,19 @@
         gap: 15px;
         max-width: 500px;
     }
+
+    .animate-slide-up {
+        animation: slideUp 0.35s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(10px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
 }

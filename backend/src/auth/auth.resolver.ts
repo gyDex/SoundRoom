@@ -1,4 +1,4 @@
-  // auth/auth.resolver.ts
+
   import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
   import { AuthService } from './auth.service';
   import { UseGuards } from '@nestjs/common';
@@ -10,11 +10,40 @@
 import { User } from './entities/user.entity';
 import { LogoutResponse } from './dto/logout.response';
 import { GoogleLoginInput } from './dto/google-login-input';
+import { TwoFactorSetupResponse } from './dto/two-factor-setup.response';
+import { LoginResponse } from './dto/login.response';
 
 
   @Resolver()
   export class AuthResolver {
     constructor(private authService: AuthService) {}
+
+    @Mutation(() => TwoFactorSetupResponse)
+    @UseGuards(JwtAuthGuard)
+    enableTwoFactor(@Context() context: any) {
+      const userId = context.req.user.userId;
+      return this.authService.enableTwoFactor(userId);
+    }
+
+    @Mutation(() => Boolean)
+    @UseGuards(JwtAuthGuard)
+    verifyTwoFactor(
+      @Context() context: any,
+      @Args('code') code: string,
+    ) {
+      const userId = context.req.user.userId;
+      return this.authService.verifyTwoFactor(userId, code);
+    }
+
+    @Mutation(() => Boolean)
+    @UseGuards(JwtAuthGuard)
+    disableTwoFactor(
+      @Context() context: any,
+      @Args('code') code: string,
+    ) {
+      const userId = context.req.user.userId;
+      return this.authService.disableTwoFactor(userId, code);
+    }
 
     @Query(() => User)
     @UseGuards(JwtAuthGuard)
@@ -41,13 +70,22 @@ import { GoogleLoginInput } from './dto/google-login-input';
       return this.authService.googleLogin(googleLoginInput.token, res);
     }
 
-
     @Mutation(() => TokenResponse)
-    async login(@Args('loginInput') loginInput: LoginInput,
-    @Context() context: any,
-  ): Promise<TokenResponse> {
-      const res = context.res;
-      return this.authService.login(loginInput, res);
+    loginWithTwoFactor(
+      @Args('code') code: string,
+      @Args('twoFaToken') twoFaToken: string,
+      @Context() { res }: any,
+    ) {
+      return this.authService.loginWithTwoFactor(twoFaToken, code, res);
+    }
+
+
+    @Mutation(() => LoginResponse)
+    login(
+      @Args('loginInput') loginInput: LoginInput,
+      @Context() context: any,
+    ) {
+      return this.authService.login(loginInput, context.res);
     }
 
     @Mutation(() => Boolean)

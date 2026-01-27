@@ -12,6 +12,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
 import { PartyModule } from './party/party.module';
+import { RedisService } from './redis/redis.service';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -48,8 +50,9 @@ import { PartyModule } from './party/party.module';
     AuthModule,
     FriendsModule,
     PartyModule,
+    SettingsModule,
   ],
   controllers: [UploadController],
-  providers: [ConfigService, SupabaseService],
+  providers: [ConfigService, SupabaseService, RedisService],
 })
 export class AppModule {}

@@ -7,8 +7,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './party.service';
-import { AuthService } from 'src/auth/auth.service';
-import { ConnectionPoolClosedEvent } from 'typeorm';
 
 @WebSocketGateway({
   cors: {
@@ -21,41 +19,8 @@ export class PartyGateway {
   server: Server;
 
   constructor(
-    private readonly roomService: RoomService, 
-    private readonly authService: AuthService) {
+    private readonly roomService: RoomService) {
     console.log('🔥 PartyGateway initialized');
-  }
-
-// async handleDisconnect(socket: Socket) {
-//   const userId = socket.handshake.auth?.userId;
-//   if (!userId) return;
-
-//   for (const roomId of socket.rooms) {
-//     if (roomId === socket.id) continue;
-
-//     console.log('DISCONNECT → LEAVE', userId, roomId);
-
-//     const updated = await this.roomService.leave(userId, roomId);
-
-//     if (updated === null) {
-//       this.server.to(roomId).emit('room-deleted', { roomId });
-//     } else {
-//       this.server.to(roomId).emit('user-left', {
-//         userId,
-//         state: updated,
-//       });
-//     }
-//   }
-// }
-
-  private cleanMemoryRooms(socket: Socket): void {
-    // Очищаем комнаты Socket.IO
-    const rooms = Array.from(socket.rooms);
-    for (const roomId of rooms) {
-      if (roomId !== socket.id) {
-        socket.leave(roomId);
-      }
-    }
   }
 
   @SubscribeMessage('create-room')
@@ -69,11 +34,11 @@ export class PartyGateway {
     
     socket.join(roomId);
 
-    console.log(userId, roomId)
+    // console.log(userId, roomId)
 
-    await this.roomService.join(userId, roomId, state.password)
+    // await this.roomService.join(userId, roomId, state.password, this.server)
     
-    console.log(room)
+    // console.log(room)
 
     socket.emit('room-created', {
       roomId,
@@ -123,27 +88,51 @@ export class PartyGateway {
     }
   }
 
-
-  @SubscribeMessage('join-room')
-  async joinRoom(
-    @MessageBody() { roomId, password },
+  @SubscribeMessage('host-state')
+  async handleHostState(
+    @MessageBody() data,
     @ConnectedSocket() socket: Socket,
   ) {
-    const userId = socket.handshake.auth.userId;
+    const { roomId, ...state } = data;
 
-    const room = await this.roomService.join(userId, roomId, password)
-    if (!room) return;
+    // this.roomService.set(roomId, state);
 
-    socket.join(roomId);
+    await this.roomService.update(roomId, state);
 
-    console.log('👤 JOIN ROOM', roomId);
-
-    socket.emit('room-joined', {
+    this.server.to(roomId).emit('sync-state', {
       roomId,
-      isHost: false,
-      state: room,
+      ...state,
     });
   }
+
+
+@SubscribeMessage('join-room')
+async joinRoom(
+  @MessageBody() { roomId, password },
+  @ConnectedSocket() socket: Socket,
+) {
+  const userId = socket.handshake.auth.userId;
+
+  await this.roomService.join(userId, roomId, password);
+
+  socket.join(roomId);
+
+  const runtime = await this.roomService.getRuntime(roomId);
+
+  console.log(runtime, 'runtime')
+
+  if (!runtime) {
+    socket.emit('error', { message: 'Room has no active state' });
+    return;
+  }
+
+  socket.emit('room-joined', {
+    roomId,
+    isHost: runtime.hostId === userId,
+    state: runtime,
+  });
+}
+
 
   @SubscribeMessage('change-track')
   async changeTrack(
@@ -151,13 +140,16 @@ export class PartyGateway {
     @ConnectedSocket() socket: Socket,
   ) {
     const userID = socket.handshake.auth.userId;
-    const room = await this.roomService.get(roomId);
-    if (!room || room.hostId !== userID) return;
+    const room = await this.roomService.getRuntime(roomId);
+      
+
+    if (!room || room.hostId  !== userID) return;
     console.log('change-track')
     console.log(room, 'room')
+    console.log(audio, 'audio')
 
-    const updated = this.roomService.update(roomId, {
-      audio,
+    const updated =  await this.roomService.update(roomId, {
+      audio: audio,
       position: position,
       isPlaying: true,
       updatedAt: Date.now(),
@@ -174,13 +166,13 @@ export class PartyGateway {
     console.log('play')
 
     const userId = socket.handshake.auth.userId;
-    const room = await this.roomService.get(roomId);
-    if (!room || room.hostId !== userId) return;
+    const room = await this.roomService.getRuntime(roomId);
+    if (!room || room.hostId  !== userId) return;
 
-    const updated = this.roomService.update(roomId, {
+    const updated = await this.roomService.update(roomId, {
       isPlaying: true,
       position,
-      audio,
+      audio: audio,
       duration,
       updatedAt: Date.now(),
     });
@@ -196,14 +188,14 @@ export class PartyGateway {
     console.log('pause')
 
     const userId = socket.handshake.auth.userId;
-    const room = await this.roomService.get(roomId);
-    if (!room || room.hostId !== userId) return;
+    const room = await this.roomService.getRuntime(roomId);
+    if (!room || room.hostId  !== userId) return;
 
 
-    const updated = this.roomService.update(roomId, {
+    const updated = await this.roomService.update(roomId, {
       isPlaying: false,
       position,
-      audio,
+      audio: audio,
       // duration,
       updatedAt: Date.now(),
     });
@@ -212,17 +204,18 @@ export class PartyGateway {
   }
 
   @SubscribeMessage('seek')
-async seek(
-  @MessageBody() { roomId, position },
-  @ConnectedSocket() socket: Socket,
-) {
+  async seek(
+    @MessageBody() { roomId, position,duration },
+    @ConnectedSocket() socket: Socket,
+  ) {
   console.log('seek')
   const userId = socket.handshake.auth.userId;
-  const room = await this.roomService.get(roomId);
-  if (!room || room.hostId !== userId) return;
+  const room = await this.roomService.getRuntime(roomId);
+  if (!room || room.hostId  !== userId) return;
 
-  const updated = this.roomService.update(roomId, {
+  const updated = await this.roomService.update(roomId, {
     position,
+    duration,
     updatedAt: Date.now(),
   });
 

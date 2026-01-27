@@ -38,6 +38,14 @@ input DeletePlaylistInput {
   playlistId: ID!
 }
 
+input EditPlaylistInput {
+  id: ID!
+  imageUrl: String
+  name: String!
+  trackIds: [ID!]
+  userId: ID!
+}
+
 input GetUsersInput {
   roomId: ID!
 }
@@ -54,9 +62,20 @@ type IncomingFriendRequest {
 input LoginInput {
   """User email address"""
   email: String!
+  otp: String
 
   """User password"""
   password: String!
+}
+
+type LoginResponse {
+  accessToken: String
+  expiresIn: Float
+  refreshToken: String
+  success: Boolean!
+  tokenType: String
+  twoFaToken: String
+  twoFactorRequired: Boolean
 }
 
 type LogoutResponse {
@@ -70,15 +89,21 @@ type Mutation {
   createPlaylist(createPlaylistInput: CreatePlaylistInput!): Playlist!
   createTrack(createTrackInput: CreateTrackInput!): Track!
   deletePlaylist(deletePlaylistInput: DeletePlaylistInput!): Playlist!
+  disableTwoFactor(code: String!): Boolean!
+  editPlaylist(editPlaylistInput: EditPlaylistInput!): Playlist!
+  enableTwoFactor: TwoFactorSetupResponse!
   googleLogin(googleLoginInput: GoogleLoginInput!): TokenResponse!
-  login(loginInput: LoginInput!): TokenResponse!
+  login(loginInput: LoginInput!): LoginResponse!
+  loginWithTwoFactor(code: String!, twoFaToken: String!): TokenResponse!
   logout: LogoutResponse!
   refreshToken: Boolean!
   register(registerInput: RegisterInput!): TokenResponse!
   rejectRequest(input: RequestIdInput!): Boolean!
   removeTrack(id: Int!): Track!
   sendFriendRequest(input: CreateFriendInput!): Boolean!
+  toggle2FA(toggle2FAInput: toggle2FAInput!): Boolean!
   updateTrack(updateTrackInput: UpdateTrackInput!): Track!
+  verifyTwoFactor(code: String!): Boolean!
 }
 
 type PartyOutput {
@@ -136,6 +161,7 @@ type TokenResponse {
 
   """Type of token"""
   tokenType: String!
+  twoFactorRequired: Boolean
 }
 
 type Track {
@@ -147,6 +173,11 @@ type Track {
   name: String!
   playlists: [Playlist!]
   urlFile: String
+}
+
+type TwoFactorSetupResponse {
+  qrCode: String!
+  secret: String!
 }
 
 input UpdateTrackInput {
@@ -172,4 +203,8 @@ type User {
   updatedAt: DateTime!
   userAvatar: String!
   username: String
+}
+
+input toggle2FAInput {
+  enable: Boolean!
 }

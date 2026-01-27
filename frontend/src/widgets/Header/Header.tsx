@@ -4,6 +4,7 @@ import { MdArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md'
 import { Searcher } from '../Searcher/Searcher'
 import './Header.scss'
 import { useRouter } from 'next/navigation'
+import SwitchLanguages from '../SwitchLanguages/SwitchLanguages'
 
 export const Header = () => {
     const router = useRouter()
@@ -19,6 +20,8 @@ export const Header = () => {
                     <button  onClick={() => router.forward()} className='header__btn'>
                         <MdArrowForwardIos color='white' />
                     </button>
+
+                    <SwitchLanguages />
                 </div>
 
                 <div className='header__right'>

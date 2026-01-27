@@ -19,6 +19,7 @@ import { Dropdown, MenuProps, Tag } from 'antd';
 import { IoPersonAdd } from 'react-icons/io5';
 import { observer } from 'mobx-react-lite';
 import { friendsTabStore } from '@/shared/stores/friends-tab';
+import SwitchTheme from '../SwitchTheme/SwitchTheme';
 
 
 export const Sidebar = observer(() => {
@@ -116,6 +117,8 @@ export const Sidebar = observer(() => {
                             </div>
 
                             <div className='sidebar__profile-right'>
+                                <SwitchTheme />
+
                                 <button onClick={() => router.push('/')} className='sidebar__profile-btn'>
                                     <IoMdHome  size={25} />
                                 </button>
@@ -124,11 +127,10 @@ export const Sidebar = observer(() => {
                                     <IoIosMore  size={25} />                                    
                                 </button>
                             </div>
-
                         </div>
 
                         <div className='sidebar__group mb-[32px]'>
-                            <span className='sidebar__group-name'>MY COLLECTION <Tag  key={'gold'} color={'gold'} variant={'outlined'}>Coming soon</Tag> </span>
+                            <span className='sidebar__group-name'>MY COLLECTION <Tag  key={'gold'} color={'gold'} >Coming soon</Tag> </span>
 
                             <ul className='sidebar__group-list'>
                                 {
@@ -159,11 +161,11 @@ export const Sidebar = observer(() => {
                             </ul>
                         </div>
 
-                        <div className='sidebar__group mb-[10px]'>
+                        <div onClick={() => route.push('/settings')} className='sidebar__group mb-[10px]'>
                             <div className='sidebar__group-item'>
                                 <CiSettings   size={25} />
 
-                                Setting
+                                Settings
                             </div>
                         </div>
 

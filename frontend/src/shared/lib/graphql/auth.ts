@@ -1,11 +1,27 @@
 import { gql } from "graphql-request";
 
 export const LOGIN = gql`
-    mutation Login($email: String!, $password: String!) {
-        login(loginInput: {
-            email: $email
-            password: $password
-        }) {
+  mutation Login($email: String!, $password: String!) {
+    login(
+      loginInput: {
+        email: $email
+        password: $password
+      }
+    ) {
+      success
+      twoFactorRequired
+      accessToken
+      refreshToken
+      expiresIn
+      tokenType
+      twoFaToken
+    }
+  }
+`;
+
+export const LOGIN_WITH_2FA = gql`
+    mutation LoginWith2FA($code: String!, $twoFaToken: String!) {
+        loginWithTwoFactor(code: $code, twoFaToken: $twoFaToken) {
             accessToken
             refreshToken
             expiresIn

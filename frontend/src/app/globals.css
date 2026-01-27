@@ -37,3 +37,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), sans-serif;
 }
+
+.ant-form-item-explain-error {
+  @apply !text-rose-500 !font-semibold !text-[14px]
+}
