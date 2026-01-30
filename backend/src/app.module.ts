@@ -31,19 +31,23 @@ import { ArtistModule } from './artist/artist.module';
         return { req, res };
       },
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url:       "***REMOVED***",
-      logging: true, 
-      synchronize: false,
-      ssl: true,
-      entities: ['dist/**/*.entity{.ts,.js}'],
-      extra: {
-        ssl: {
-          rejectUnauthorized: false
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        url:       configService.get<string>('SUPABASE_DIRECT'),
+        logging: true, 
+        synchronize: false,
+        ssl: true,
+        entities: ['dist/**/*.entity{.ts,.js}'],
+        extra: {
+          ssl: {
+            rejectUnauthorized: false
+          },
+          max: 10,
         },
-        max: 10,
-      },
+      })
     }),
     TrackModule,
     PlaylistModule,

@@ -10,7 +10,7 @@ import { Artist } from './artist/entities/artist.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  url: '***REMOVED***',
+  url: process.env.SUPABASE_DIRECT,
 
   ssl: {
     rejectUnauthorized: false,
