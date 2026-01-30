@@ -3,7 +3,7 @@ const { DataSource } = require("typeorm");
 
 module.exports = new DataSource({
     type: 'postgres',
-    url: '***REMOVED***?pgbouncer=true',
+    url: process.env.SUPABASE_DIRECT,
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/db/migrations/*{.ts,.js}'],
     migrationsRun: true,

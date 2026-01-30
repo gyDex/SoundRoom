@@ -51,6 +51,7 @@ cp .env.example .env
 | DB_PASSWORD        | DB password          |
 | DB_DATABASE        | DB name              |
 | SUPABASE_URL       | Supabase URL         |
+| SUPABASE_DIRECT    | URL Supabase         |
 | SUPABASE_KEY       | Service Role Key     |
 | JWT_ACCESS_SECRET  | Access token secret  |
 | JWT_REFRESH_SECRET | Refresh token secret |
