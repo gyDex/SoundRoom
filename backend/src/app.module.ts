@@ -14,6 +14,7 @@ import { FriendsModule } from './friends/friends.module';
 import { PartyModule } from './party/party.module';
 import { RedisService } from './redis/redis.service';
 import { SettingsModule } from './settings/settings.module';
+import { ArtistModule } from './artist/artist.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { SettingsModule } from './settings/settings.module';
     FriendsModule,
     PartyModule,
     SettingsModule,
+    ArtistModule,
   ],
   controllers: [UploadController],
   providers: [ConfigService, SupabaseService, RedisService],

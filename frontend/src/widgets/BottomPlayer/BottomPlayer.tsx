@@ -10,13 +10,30 @@ import { conversionToTime } from '@/features/ConversionToTime';
 
 import { useSocket } from "@/shared/providers/SocketProvider";
 import { roomStore } from "@/shared/stores/room.store";
+import { MdOutline1xMobiledata } from "react-icons/md";
 
 export const BottomPlayer = observer(() => {
   const [volume, setVolume] = useState(10);  
+  const [playbackRate, setPlaybackRate] = useState<'1x' | '2x'>('1x');  
   const audioRef = useRef<HTMLAudioElement>(null);
   const socket = useSocket();
 
   const isSeekingRef = useRef(false);
+
+  const handlePlaybackRate = () => {
+    const audio = audioRef.current;
+
+    if (audio === null) return;
+
+    setPlaybackRate((prev: any) => {
+      if (prev === '1x') {
+        audio.playbackRate = 2;
+        return '2x'
+      }
+      audio.playbackRate = 1;
+      return '1x'
+    })
+  }
 
   useEffect(() => {
     if (audioRef.current) {
@@ -24,50 +41,49 @@ export const BottomPlayer = observer(() => {
     }
   },[])
 
-useEffect(() => {
-  if (!playerStore.isRoom) return;
-  if (!playerStore.isHost) return;
+  useEffect(() => {
+    if (!playerStore.isRoom) return;
+    if (!playerStore.isHost) return;
 
-  const audio = audioRef.current;
-  const track = playerStore.currentPlay;
-  if (!audio || !track?.audio) return;
+    const audio = audioRef.current;
+    const track = playerStore.currentPlay;
+    if (!audio || !track?.audio) return;
 
-  // audio.pause();
-  audio.src = track.audio;
-  audio.currentTime = 0;
+    // audio.pause();
+    audio.src = track.audio;
+    audio.currentTime = 0;
 
-  playerStore.setProgress(0);
-  playerStore.setCurrentTime(0);
+    playerStore.setProgress(0);
+    playerStore.setCurrentTime(0);
 
-  socket?.emit('change-track', {
-    roomId: roomStore.currentRoom?.id,
-    audio: track,
-    position: 0,
-    isPlaying: playerStore.IsPlay,
-    duration: audio.duration || 0,
-    updatedAt: Date.now(),
-  });
-}, [playerStore.currentPlay?.id]);
-
-useEffect(() => {
-  if (!playerStore.isRoom) return;
-  if (!playerStore.isHost) return;
-  if (!playerStore.currentPlay) return;
-
-  const audio = audioRef.current;
-  if (!audio) return;
-
-  audio.src = playerStore.currentPlay.audio;
-  // audio.currentTime = 0;
-
-  if (playerStore.IsPlay) {
-    audio.play().catch(() => {
-      // playerStore.pause();
+    socket?.emit('change-track', {
+      roomId: roomStore.currentRoom?.id,
+      audio: track,
+      position: 0,
+      isPlaying: playerStore.IsPlay,
+      duration: audio.duration || 0,
+      updatedAt: Date.now(),
     });
-  }
+  }, [playerStore.currentPlay?.id]);
 
-}, [playerStore.currentPlay?.id, playerStore.isRoom, playerStore.isHost]);
+  useEffect(() => {
+    if (!playerStore.isRoom) return;
+    if (!playerStore.isHost) return;
+    if (!playerStore.currentPlay) return;
 
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.src = playerStore.currentPlay.audio;
+    // audio.currentTime = 0;
+
+    if (playerStore.IsPlay) {
+      audio.play().catch(() => {
+        // playerStore.pause();
+      });
+    }
+
+  }, [playerStore.currentPlay?.id, playerStore.isRoom, playerStore.isHost]);
 
   useEffect(() => {
     if (!socket) return;
@@ -494,6 +510,7 @@ useEffect(() => {
                   if (!playerStore.isRoom) playerStore.setIsPlay(true);
                 }}
                 onChange={handleProgressChange}
+
                 className="bottom-player__input"
                 style={{
                   background: `linear-gradient(to right, #679efe 0%, #679efe ${playerStore.progress}%, #535353 ${playerStore.progress}%, #535353 100%)`
@@ -506,6 +523,12 @@ useEffect(() => {
 
           <div className='bottom-player__right'>
             <div className='flex items-center gap-[10px]'>
+              <button className="w-[30px]" onClick={handlePlaybackRate}>
+                  {
+                      playbackRate === '1x' ? <span className="bottom-player__playback-rate">1X</span> : <span className="bottom-player__playback-rate">2X</span>
+                  }  
+              </button>
+
               <button className=''>
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20.88 9.315H23.67L21.885 11.025C21.8147 11.0947 21.7589 11.1777 21.7208 11.2691C21.6828 11.3605 21.6632 11.4585 21.6632 11.5575C21.6632 11.6565 21.6828 11.7545 21.7208 11.8459C21.7589 11.9373 21.8147 12.0203 21.885 12.09C21.9552 12.1649 22.0399 12.2247 22.1341 12.2655C22.2283 12.3063 22.3299 12.3274 22.4325 12.3274C22.5352 12.3274 22.6367 12.3063 22.7309 12.2655C22.8251 12.2247 22.9098 12.1649 22.98 12.09L26.0775 9.09C26.1504 9.02223 26.209 8.94065 26.25 8.85C26.2952 8.75644 26.3186 8.65389 26.3186 8.55C26.3186 8.4461 26.2952 8.34355 26.25 8.25C26.2158 8.15538 26.1592 8.07045 26.085 8.0025L22.9875 5.0025C22.8385 4.86167 22.6413 4.7832 22.4363 4.7832C22.2312 4.7832 22.034 4.86167 21.885 5.0025C21.8147 5.07222 21.7589 5.15517 21.7208 5.24656C21.6828 5.33796 21.6632 5.43599 21.6632 5.535C21.6632 5.63401 21.6828 5.73203 21.7208 5.82343C21.7589 5.91482 21.8147 5.99777 21.885 6.0675L23.67 7.785H20.88C19.9782 7.76911 19.082 7.93116 18.2428 8.26189C17.4037 8.59262 16.6379 9.08554 15.9894 9.71246C15.3409 10.3394 14.8223 11.088 14.4634 11.9155C14.1044 12.743 13.9122 13.6331 13.8975 14.535C13.8858 15.2363 13.736 15.9284 13.4568 16.5718C13.1775 17.2152 12.7743 17.7973 12.27 18.2848C11.7658 18.7723 11.1704 19.1558 10.518 19.4132C9.86555 19.6706 9.16879 19.7969 8.4675 19.785H4.5825C4.38359 19.785 4.19283 19.864 4.05217 20.0047C3.91152 20.1453 3.8325 20.3361 3.8325 20.535C3.8325 20.7339 3.91152 20.9247 4.05217 21.0653C4.19283 21.206 4.38359 21.285 4.5825 21.285H8.4675C10.2883 21.3151 12.0466 20.621 13.3559 19.3553C14.6652 18.0896 15.4184 16.3558 15.45 14.535C15.4815 13.1239 16.0704 11.7827 17.0879 10.8046C18.1054 9.8264 19.4688 9.29086 20.88 9.315ZM4.5825 9.315H8.4675C9.33651 9.30896 10.1945 9.50987 10.9705 9.90112C11.7464 10.2924 12.4181 10.8627 12.93 11.565C13.1244 11.0391 13.3759 10.5361 13.68 10.065C13.0086 9.34664 12.1952 8.77568 11.2914 8.38835C10.3877 8.00102 9.41324 7.80577 8.43 7.815H4.5825C4.38359 7.815 4.19283 7.89401 4.05217 8.03467C3.91152 8.17532 3.8325 8.36608 3.8325 8.565C3.8325 8.76391 3.91152 8.95467 4.05217 9.09533C4.19283 9.23598 4.38359 9.315 4.5825 9.315Z" fill="#838383"/>

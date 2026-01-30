@@ -1,5 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Track } from '../track.entity';
+import { Track } from '../entities/track.entity';
 
 
 @ObjectType()
