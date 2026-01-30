@@ -6,6 +6,21 @@ input AddFavoriteInput {
   trackId: String!
 }
 
+type Artist {
+  genre: String!
+  id: ID!
+  imageUrl: String!
+  name: String!
+  tracks: [Track!]
+}
+
+input CreateArtistInput {
+  genre: String!
+  imageUrl: String!
+  name: String!
+  tracks: [CreateTrackInput!]
+}
+
 input CreateFriendInput {
   tag: String!
 }
@@ -20,7 +35,7 @@ input CreatePlaylistInput {
 }
 
 input CreateTrackInput {
-  artist: String!
+  artistId: ID!
   created_at: DateTime
   duration: Int!
   genre: String!
@@ -86,6 +101,7 @@ type LogoutResponse {
 type Mutation {
   addFavorite(input: AddFavoriteInput!): Boolean!
   applyRequest(input: RequestIdInput!): Boolean!
+  createArtist(createArtistInput: CreateArtistInput!): Artist!
   createPlaylist(createPlaylistInput: CreatePlaylistInput!): Playlist!
   createTrack(createTrackInput: CreateTrackInput!): Track!
   deletePlaylist(deletePlaylistInput: DeletePlaylistInput!): Playlist!
@@ -99,10 +115,10 @@ type Mutation {
   refreshToken: Boolean!
   register(registerInput: RegisterInput!): TokenResponse!
   rejectRequest(input: RequestIdInput!): Boolean!
+  removeArtist(id: ID!): Boolean!
   removeTrack(id: Int!): Track!
   sendFriendRequest(input: CreateFriendInput!): Boolean!
   toggle2FA(toggle2FAInput: toggle2FAInput!): Boolean!
-  updateTrack(updateTrackInput: UpdateTrackInput!): Track!
   verifyTwoFactor(code: String!): Boolean!
 }
 
@@ -124,6 +140,8 @@ type Playlist {
 }
 
 type Query {
+  artist(id: ID!): Artist!
+  artists: [Artist!]!
   checkFavorite(input: AddFavoriteInput!): Boolean!
   getAllFriends: [User!]!
   getConnectedUsers(input: GetUsersInput!): PartyOutput!
@@ -165,7 +183,7 @@ type TokenResponse {
 }
 
 type Track {
-  artist: String!
+  artist: Artist!
   created_at: DateTime
   duration: Int!
   genre: String!
@@ -178,17 +196,6 @@ type Track {
 type TwoFactorSetupResponse {
   qrCode: String!
   secret: String!
-}
-
-input UpdateTrackInput {
-  artist: String!
-  created_at: DateTime
-  duration: Int!
-  genre: String!
-  id: String!
-  name: String!
-  playlistIds: [ID!]
-  urlFile: String!
 }
 
 type User {

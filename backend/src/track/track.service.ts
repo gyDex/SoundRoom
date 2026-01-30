@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Track } from './entities/track.entity';
 import { CreateTrackInput } from './dto/create-track.input';
-import { UpdateTrackInput } from './dto/update-track.input';
-import { Favorite } from 'src/favorite/entities/favorite.entity';
+import { Favorite } from '../favorite/entities/favorite.entity';
+import { Artist } from '../artist/entities/artist.entity';
 
 @Injectable()
 export class TrackService {
@@ -14,11 +14,29 @@ export class TrackService {
 
     @InjectRepository(Favorite)
     private favoriteRepository: Repository<Favorite>,
+
+    @InjectRepository(Artist)
+    private artistRepo: Repository<Artist>,
   ) {}
 
-  async create(createTrackInput: CreateTrackInput): Promise<Track> {
-      const track = this.trackRepository.create(createTrackInput);
-      return await this.trackRepository.save(track);
+  async create(input: CreateTrackInput) {
+    const artist = await this.artistRepo.findOneBy({
+      id: input.artistId,
+    });
+
+    if (!artist) {
+      throw new BadRequestException('Artist not found');
+    }
+
+    const track = this.trackRepository.create({
+      name: input.name,
+      duration: input.duration,
+      genre: input.genre,
+      urlFile: input.urlFile,
+      artist, 
+    });
+
+    return this.trackRepository.save(track);
   }
 
   async findAll(): Promise<Track[]> {
@@ -104,10 +122,10 @@ await this.favoriteRepository
     return true;
   }
 
-  async update(id: string, updateTrackInput: UpdateTrackInput): Promise<Track> {
-    await this.trackRepository.update(id, updateTrackInput);
-    return await this.findOne(id);
-  }
+  // async update(id: string, updateTrackInput: UpdateTrackInput): Promise<Track> {
+  //   await this.trackRepository.update(id, updateTrackInput);
+  //   return await this.findOne(id);
+  // }
 
   async remove(id: string): Promise<any> {
     const result = await this.trackRepository.delete(id) as any;

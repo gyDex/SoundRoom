@@ -6,9 +6,6 @@ export class CreateTrackInput {
   @Field(() => String)
   name: string;
   
-  @Field(() => String)
-  artist: string;
-  
   @Field(() => Int)
   duration: number
   
@@ -28,4 +25,7 @@ export class CreateTrackInput {
 
   @Field(() => [ID], { nullable: true })
   playlistIds?: string[];
+
+  @Field(() => ID)
+  artistId: string;
 }

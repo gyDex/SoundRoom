@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Playlist } from 'src/track/entities/playlist.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreatePlaylistInput } from './dto/create-playlist.input';
-import { Track } from 'src/track/track.entity';
 import { DeletePlaylistInput } from './dto/delete-playlist.input';
 import { EditPlaylistInput } from './dto/edit-playlist.input';
 

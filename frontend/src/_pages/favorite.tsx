@@ -1,14 +1,10 @@
 'use client'
 
-import { useFavTracks } from '@/shared/hooks/useFavTracks'
-import { PlaylistContent, PlaylistTop } from '@/widgets'
-import Loader from '@/widgets/Loader/Loader'
+import { PlaylistTop } from '@/widgets'
 import { useParams } from 'next/navigation'
 import React from 'react'
 
 export const FavoritePage = () => {
-
-    const {data: favorites, isLoading} = useFavTracks();
 
     const { id } = useParams() as any;
 

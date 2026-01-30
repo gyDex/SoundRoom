@@ -61,10 +61,10 @@ export class TrackResolver {
     return this.trackService.findOne(id);
   }
 
-  @Mutation(() => Track)
-  updateTrack(@Args('updateTrackInput') updateTrackInput: UpdateTrackInput) {
-    return this.trackService.update(updateTrackInput.id, updateTrackInput);
-  }
+  // @Mutation(() => Track)
+  // updateTrack(@Args('updateTrackInput') updateTrackInput: UpdateTrackInput) {
+  //   return this.trackService.update(updateTrackInput.id, updateTrackInput);
+  // }
 
   @Mutation(() => Track)
   removeTrack(@Args('id', { type: () => Int }) id: any) {

@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import PlaylistModal from '@/widgets/Modals/PlaylistModal'
 import { Select } from '@/widgets/Select/Select'
-import { useAuth } from '@/shared/lib/graphql/useAuth'
 
 type Props = {
     name: string,
@@ -22,8 +21,6 @@ type Props = {
 export const PlaylistTop:React.FC<Props> = ({name, tracks, imageUrl, id, isActiveDeleteBtn = true}) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  const { user } = useAuth();
 
   const [IsModalOpen, setIsModalOpen] = useState(false);
 
