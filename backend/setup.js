@@ -2,7 +2,7 @@ const { Client } = require('pg');
 
 async function setup() {
   const client = new Client({
-    connectionString: 'REMOVED',
+    connectionString: process.env.SUPABASE_DIRECT,
     ssl: { rejectUnauthorized: false }
   });
 
