@@ -213,3 +213,6 @@ npm run start:dev
 npm run build
 npm run start:prod
 ```
+
+### Доступ
+- Frontend: http://localhost:4000

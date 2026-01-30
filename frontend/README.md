@@ -66,4 +66,6 @@ npm run dev
 ```
 
 ### Доступ
-- Frontend: http://localhost:3000
+- API: http://localhost:4000  
+- GraphQL Playground: http://localhost:4000/graphql  
+- WebSocket: ws://localhost:4000
