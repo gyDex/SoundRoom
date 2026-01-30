@@ -38,6 +38,23 @@ Backend-часть музыкального веб-приложения **Soundr
 
 ---
 
+## Переменные окружения (Backend)
+
+| Переменная | Описание |
+|-----------|----------|
+| DB_HOST | Хост PostgreSQL |
+| DB_PORT | Порт PostgreSQL |
+| DB_USERNAME | Пользователь БД |
+| DB_PASSWORD | Пароль БД |
+| DB_DATABASE | Название БД |
+| SUPABASE_URL | URL Supabase |
+| SUPABASE_KEY | Service Role Key |
+| JWT_ACCESS_SECRET | Секрет access token |
+| JWT_REFRESH_SECRET | Секрет refresh token |
+| JWT_2FA_SECRET | Секрет 2FA |
+
+---
+
 ## GraphQL API
 API реализовано на базе **NestJS + Apollo Server**.  
 Схема GraphQL генерируется автоматически.
