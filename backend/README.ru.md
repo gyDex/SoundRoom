@@ -51,6 +51,7 @@ cp .env.example .env
 | DB_PASSWORD        | Пароль БД            |
 | DB_DATABASE        | Название БД          |
 | SUPABASE_URL       | URL Supabase         |
+| SUPABASE_DIRECT    | URL Supabase         |
 | SUPABASE_KEY       | Service Role Key     |
 | JWT_ACCESS_SECRET  | Секрет access token  |
 | JWT_REFRESH_SECRET | Секрет refresh token |
