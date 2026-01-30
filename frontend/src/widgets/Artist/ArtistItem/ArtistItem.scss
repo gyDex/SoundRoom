@@ -1,0 +1,66 @@
+.artist-item {
+    border-radius: 8px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr 1fr 1fr 100px;
+    background-color: #1818183b;
+    transition: background 0.2s ease-in;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    &:not(:first-child) {
+        margin-top: 10px;
+    }
+
+    &__play {
+        position: absolute;
+        z-index: 10;
+    }
+
+    &__hover {
+        height: 70px;
+        width: 70px;
+        top: 0;
+        left: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.532);
+        position: absolute;
+    }
+
+    &__text-wrap {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__image-wrap {
+        width: 70px;
+        height: 70px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__image {
+        height: 70px;
+        width: 70px;
+        object-fit: cover;
+    }
+
+    @media (hover:hover) {
+        &:hover {
+            background-color: #18181878;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 12px, rgba(85, 136, 255, 0.05) 0px 30px 150px;
+        }
+
+        &__image {
+
+        }
+    }
+
+}

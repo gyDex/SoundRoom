@@ -85,13 +85,6 @@ useEffect(() => {
   setImageUrl(playlist.imageUrl ?? '/images/def.png');
 }, [mode, playlist?.tracks]);
 
-// notification.open({
-//   message: 'New track',
-//   description: 'Daft Punk – One More Time',
-//   placement: 'bottomRight',
-// });
-  console.log(selectTracks)
-
   const handleCancel = () => setIsModalOpen?.(false);
 
   /* ---------- submit ---------- */

@@ -1,8 +1,9 @@
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToMany, JoinTable, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToMany, OneToMany, ManyToOne } from 'typeorm';
 import { Playlist } from './playlist.entity';
 import { IsOptional } from 'class-validator';
 import { Favorite } from '../../favorite/entities/favorite.entity';
+import { Artist } from '../../artist/entities/artist.entity';
 
 @Entity('track')
 @ObjectType()
@@ -14,10 +15,6 @@ export class Track {
   @Column()
   @Field()
   name: string;
-
-  @Column()
-  @Field()
-  artist: string;
 
   @Column()
   @Field(() => Int)
@@ -46,4 +43,8 @@ export class Track {
 
   @OneToMany(() => Favorite, fav => fav.track)
   favorites: Favorite[];
+
+  @ManyToOne(() => Artist, artist => artist.tracks, { onDelete: 'CASCADE' })
+  @Field(() => Artist)
+  artist: Artist;
 }

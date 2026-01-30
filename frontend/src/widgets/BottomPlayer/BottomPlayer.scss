@@ -143,6 +143,19 @@
         max-width: 500px;
     }
 
+    &__playback-rate {
+        font-size: 20px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.366);
+        transition: color 0.3s ease;
+    }
+
+    @media (hover: hover) {
+        &__playback-rate:hover {
+            color: var(--accent);
+        }
+    }
+
     .animate-slide-up {
         animation: slideUp 0.35s ease-out;
     }

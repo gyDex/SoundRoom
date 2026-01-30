@@ -6,6 +6,7 @@ import { Favorite } from './favorite/entities/favorite.entity';
 import { Playlist } from './track/entities/playlist.entity';
 import { Friendship } from './friends/entities/friend-ship.entity';
 import { PartyEntity } from './party/entities/party.entity';
+import { Artist } from './artist/entities/artist.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -22,7 +23,15 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: true,
 
-  entities: [Track, User, Favorite,PartyEntity,  Playlist, Friendship],
+  entities: [
+    Track, 
+    User, 
+    Favorite,
+    PartyEntity,  
+    Playlist, 
+    Friendship, 
+    Artist
+  ],
 
   migrations: ['src/migrations/*.ts'],
 });

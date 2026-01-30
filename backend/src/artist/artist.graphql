@@ -1,0 +1,24 @@
+type Artist {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input CreateArtistInput {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input UpdateArtistInput {
+  id: Int!
+}
+
+type Query {
+  artist: [Artist]!
+  artist(id: Int!): Artist
+}
+
+type Mutation {
+  createArtist(createArtistInput: CreateArtistInput!): Artist!
+  updateArtist(updateArtistInput: UpdateArtistInput!): Artist!
+  removeArtist(id: Int!): Artist
+}

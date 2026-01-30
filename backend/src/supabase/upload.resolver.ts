@@ -84,9 +84,9 @@ export class UploadController {
 
     const duration = await  this.supabaseService.getAudioDuration(file.buffer, file)
 
-    this.trackService.create({
+    const track = await this.trackService.create({
       name: trackData.name,
-      artist: trackData.artist ?? 'Unknown Artist',
+      artistId: trackData.artistId,
       duration: Math.floor(duration),
       genre: trackData.genre ?? 'Unknown Genre',
       urlFile: fileUrl,
@@ -101,9 +101,9 @@ export class UploadController {
       filename: file.originalname,
       track: {
         name: trackData.name,
-        artist: trackData.artist ?? 'Unknown Artist',
+        artist: track.artist.name,
         duration: Math.floor(duration),
-        genre: trackData.genre ?? 'Unknown Genre',
+        genre: track.artist.genre,
         urlFile: fileUrl,
         created_at: trackData.created_at
       }
