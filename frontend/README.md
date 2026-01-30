@@ -19,6 +19,18 @@
 - Ant Design, Tailwind CSS, SCSS
 - React Hook Form, Zod
 
+## Переменные окружения (Frontend)
+
+Для запуска frontend-приложения необходимо создать файл `.env`
+на основе `.env.example`.
+
+| Переменная | Описание |
+|-----------|----------|
+| NEXT_PUBLIC_API_URL | URL GraphQL API |
+| NEXT_PUBLIC_WS_URL | URL WebSocket сервера |
+| NEXT_PUBLIC_GOOGLE_CLIENT_ID | Google OAuth client ID |
+| NEXT_PUBLIC_API_ENV | URL backend-сервера |
+
 ## Реализовано
 
 - Локальное воспроизведение музыкальных треков
