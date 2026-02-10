@@ -1,18 +1,22 @@
-// graphql/tracks.ts
 import { gql } from 'graphql-request';
 
 export const GET_TRACKS = gql`
   query GetAllTracks {
     tracks {  
+      id
+      name
+      duration
+      genre
+      urlFile
+      created_at
+      artist {
         id
         name
-        artist
-        duration
+        imageUrl
         genre
-        urlFile
-        created_at
+      }
     }
-    }
+  }
 `;
 
 export const ADD_FAV = gql`
@@ -46,7 +50,12 @@ export const GET_TRACK = gql`
     track(id: $id) {
       id
       name
-      artist
+      artist {
+        id
+        name
+        imageUrl
+        genre
+      }
       duration
       genre
       urlFile

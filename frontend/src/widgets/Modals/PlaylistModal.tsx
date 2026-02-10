@@ -12,6 +12,7 @@ import { usePlaylist } from '@/shared/lib/graphql/usePlaylist';
 import { getMe } from '@/shared/hooks/auth/getMe';
 import { createPlaylist } from '@/shared/hooks/playlist/createPlaylist';
 import { editPlaylist } from '@/shared/hooks/playlist/editPlaylist';
+import { useToast } from '@/shared/providers/TosterProvider/TosterProvider';
 
 type Props = {
   IsModalOpen?: boolean;
@@ -52,10 +53,7 @@ export const PlaylistModal: React.FC<Props> = ({
   const { refetchUser } = useAuth();
   const { refetchPlaylist } = usePlaylist();
 
-    console.log(tracks)
-
-
-  /* ---------- tracks ---------- */
+  const { showToast } = useToast();
   useEffect(() => {
     console.log(tracks)
 
@@ -100,6 +98,7 @@ useEffect(() => {
 
     if (mode === 'create') {
       await createPlaylist(payload);
+      showToast({status:'success', title:'Playlist has been created successfully', isLoading: false})
 
     }
 
@@ -112,6 +111,8 @@ useEffect(() => {
           imageUrl,
           tracks: selectTracks,
         });
+
+        showToast({status:'success', title:'Playlist has been edit successfully', isLoading: false})
 
       }
     }

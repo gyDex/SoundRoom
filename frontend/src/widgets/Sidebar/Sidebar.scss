@@ -1,6 +1,6 @@
 .sidebar {
-    width: 100%;
-    max-width: 400px;
+    flex-shrink: 0;
+    box-sizing: border-box;
     background-color: #181818;
     height: 100%;
     display: flex;
@@ -64,8 +64,8 @@
     &__group-list_myplaylist {
         overflow-y: scroll;
         max-height: 200px;
-        scrollbar-width: thin;          /* "auto" или "thin"  */
-        scrollbar-color: rgba(142, 142, 142, 0.126) transparent;   /* плашка скролла и дорожка */ 
+        scrollbar-width: thin;         
+        scrollbar-color: rgba(142, 142, 142, 0.126) transparent;  
     }
 
     &__group-link {
@@ -112,7 +112,7 @@
         display: none;
     }
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &__profile-btn:hover {
             color: white;
             background-color: #ffffff38;

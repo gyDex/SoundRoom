@@ -26,18 +26,3 @@ export async function createPlaylist(values: {
         throw error;
     }
 }
-
-// export async function getByIdPlaylist(id: string) {
-//     try {
-//         const data = await graphQLClient.request(
-//             GET_PLAYLIST, 
-//             {
-//                 id: id
-//             }
-//         );
-//         return data;
-//     } catch (error) {
-//         console.error('Error:', error);
-//         throw error;
-//     }
-// }

@@ -14,6 +14,7 @@ import {
 import { useSocket } from '@/shared/providers/SocketProvider';
 import { playerStore } from '@/shared/stores/player';
 import { roomStore } from '@/shared/stores/room.store';
+import { useToast } from '@/shared/providers/TosterProvider/TosterProvider';
 
 type Props = {
   IsModalOpen?: boolean,

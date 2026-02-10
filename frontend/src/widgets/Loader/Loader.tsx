@@ -3,7 +3,7 @@ import { RiLoader3Line } from "react-icons/ri";
 
 import './Loader.scss'
 
-const Loader = () => {
+const Loader = ({isActiveTitle = true} : {isActiveTitle?: boolean}) => {
   return (
     <section className='loader'>
         <div className="loader__wrapper">
@@ -14,8 +14,10 @@ const Loader = () => {
                 </div>
                 <RiLoader3Line color='white' className="loader__circle" size={96} />
             </div>
-
-            <span className="loader__title">Loading...</span>
+            {
+                isActiveTitle &&
+                <span className="loader__title">Loading...</span>
+            }
         </div>
     </section>
   )

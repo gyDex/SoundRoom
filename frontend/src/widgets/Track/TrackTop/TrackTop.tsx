@@ -18,8 +18,6 @@ type Props = {
 }
 
 const TrackTop:React.FC<Props> = observer(({data, name, imageUrl, description}) => {
-    console.log(data)
-
   return (
     <section className='track-top'>
         <Image className='track-top__image' src={imageUrl ?? '/images/def.png'} width={100} height={100} alt='poster' />
@@ -32,7 +30,7 @@ const TrackTop:React.FC<Props> = observer(({data, name, imageUrl, description}) 
                     display:'flex',
                     gap:'10px'
                 }}>
-                    <Link href={`/artist/${data.artist_id}`} className='track-top__artist'>{data.artist}</Link>
+                    <Link href={`/artist/${data.artist.id}`} className='track-top__artist'>{data.artist.name}</Link>
                     · 
                     <span style={{
                         color: 'white'

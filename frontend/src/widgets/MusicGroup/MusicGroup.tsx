@@ -9,6 +9,7 @@ import Card from '../Card/Card';
 import { FaPlus } from 'react-icons/fa';
 import Loader from '../Loader/Loader';
 import PlaylistModal from '../Modals/PlaylistModal';
+import { useToast } from '@/shared/providers/TosterProvider/TosterProvider';
 
 type Props = {
     items: IGroup[],
@@ -82,7 +83,7 @@ const MusicGroup:React.FC<Props> = ({setIsModalOpen,variation, IsModalOpen, item
                     {nameGroup}
 
                     {IsAddPlaylist && 
-                        <button onClick={() => setIsModalOpen?.(true)} className=' music-group__btn-add'>
+                        <button onClick={() => {setIsModalOpen?.(true)}} className=' music-group__btn-add'>
                             <FaPlus size={16} color='white'  />
                         </button>
                     }

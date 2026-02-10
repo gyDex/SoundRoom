@@ -7,6 +7,7 @@ import { AuthProvider } from './AuthProvider';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { SocketProvider } from './SocketProvider';
 import { ThemeMode, ThemeProvider } from 'antd-style';
+import { TosterProvider } from './TosterProvider/TosterProvider';
 
 const Providers = ({ children } : { children: React.ReactNode }) => {
   const [queryClient] = useState(() => new QueryClient({
@@ -21,11 +22,6 @@ const Providers = ({ children } : { children: React.ReactNode }) => {
 
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
-      {/* <ConfigProvider
-        theme={{
-          algorithm: theme.darkAlgorithm,
-        }} */}
-      {/* > */}
         <QueryClientProvider client={queryClient}>
           <SocketProvider>
             <AuthProvider>
@@ -41,14 +37,15 @@ const Providers = ({ children } : { children: React.ReactNode }) => {
                         : antdTheme.defaultAlgorithm,
                   }}
                 >
-                  {children}
+                  <TosterProvider>
+                    {children}
+                  </TosterProvider>
                 </ConfigProvider>
               </ThemeProvider>
             </AuthProvider>
           </SocketProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
-      {/* </ConfigProvider> */}
     </GoogleOAuthProvider>
   )
 }

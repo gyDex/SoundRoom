@@ -40,25 +40,28 @@ export class TrackService {
   }
 
   async findAll(): Promise<Track[]> {
-    return await this.trackRepository.find();
+    const result =  await this.trackRepository.find(
+      {
+        relations: ['artist']  
+      }
+    );
+    console.log(result, 'result')
+    return result;
   }
 
   async findOne(id: any): Promise<any> {
     return await this.trackRepository.findOne({ 
-      where: { id } 
+      where: { id },
+      relations: ['artist']
     });
   }
 
   async findByIds(ids: string[]): Promise<Track[]> {
-    if (!ids || ids.length === 0) {
-      return [];
-    }
-    return this.trackRepository.find({
-      where: {
-        id: In(ids)
-      }
-    });
-  }
+  return this.trackRepository.find({
+    where: { id: In(ids) },
+    relations: ['artist'], // подгружаем артиста
+  });
+}
 
   async checkFavorite(userId: string, trackId: string) {
     const exists = await this.favoriteRepository.findOne({

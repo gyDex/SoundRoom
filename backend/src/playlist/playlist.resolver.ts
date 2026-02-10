@@ -19,13 +19,11 @@ export class PlaylistResolver {
     return this.playlistService.findAll();
   }
 
-  @ResolveField(() => [Track], { name: 'tracks' })
-  async resolveTracks(@Parent() playlist: Playlist): Promise<Track[]> {
-    if (!playlist.trackIds || playlist.trackIds.length === 0) {
-      return [];
-    }
-    return this.trackService.findByIds(playlist.trackIds);
-  }
+@ResolveField(() => [Track], { name: 'tracks' })
+async resolveTracks(@Parent() playlist: Playlist): Promise<Track[]> {
+  if (!playlist.trackIds?.length) return [];
+  return this.trackService.findByIds(playlist.trackIds); // обязательно relations: ['artist']
+}
 
   @Query(() => [Playlist], { name: 'playlistsByUser' })
   async findByUserId(@Args('userId', { type: () => ID }) userId: string) { 

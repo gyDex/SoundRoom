@@ -7,19 +7,19 @@ import { IRoute, my_collection } from '@/shared/routes/my-collection';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { LuLogOut } from 'react-icons/lu';
-import { MdFavoriteBorder, MdMail } from 'react-icons/md';
+import { MdFavoriteBorder } from 'react-icons/md';
 import { CiSettings } from 'react-icons/ci';
 import { logout } from '@/shared/hooks/auth/logout';
 import { useAuth } from '@/shared/lib/graphql/useAuth';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Playlist } from '@/shared/hooks/usePlaylistUser';
 import { usePlaylist } from '@/shared/lib/graphql/usePlaylist';
-import { FaCheck, FaUserFriends } from 'react-icons/fa';
-import { Dropdown, MenuProps, Tag } from 'antd';
-import { IoPersonAdd } from 'react-icons/io5';
+import { Dropdown, Tag } from 'antd';
 import { observer } from 'mobx-react-lite';
-import { friendsTabStore } from '@/shared/stores/friends-tab';
 import SwitchTheme from '../SwitchTheme/SwitchTheme';
+import { friendsMenuItems } from './data/friendsMenuItems'
+import { FaUserFriends } from 'react-icons/fa';
+import { useResizable } from '@/shared/hooks/useResizable';
 
 
 export const Sidebar = observer(() => {
@@ -30,6 +30,8 @@ export const Sidebar = observer(() => {
     const router = useRouter();
 
     const { userLoading, playlistsByUser, getPlaylist, userId } = usePlaylist();
+
+    const { ref: sideBarRef, onMouseDown: handleMouseDown, collapsed, toggleCollapse } = useResizable({ minWidth: 320, maxWidth: 500, collapsedWidth: 40 });
     
     useEffect(() => {
         if (userId !== undefined && userId !== null && !userLoading) {
@@ -38,54 +40,6 @@ export const Sidebar = observer(() => {
         }
     },[userId])
 
-    const items: MenuProps['items'] = [
-    {
-        label: (
-            <button onClick={() => friendsTabStore.switchTab('add')} className='w-full flex justify-between items-center'>
-                <div className='flex gap-[10px]'>
-                    <IoPersonAdd  color={'white'} size={18}/>
-                    Добавить друга
-                </div>
-
-                {
-                    friendsTabStore.FriendTab === 'add' && <FaCheck  size={15} />
-                }   
-            </button>
-        ),
-        key: '0',
-    },
-    {
-        label: (
-            <button onClick={() => friendsTabStore.switchTab('list')} className='w-full flex justify-between items-center'>
-                <div className='flex gap-[10px]'>
-                    <FaUserFriends color={'white'} size={18} />
-                    Ваши друзья
-                </div>
-
-                {
-                    friendsTabStore.FriendTab === 'list' && <FaCheck  size={15} />
-                }   
-            </button>
-        ),
-        key: '1',
-    },
-    {
-        label: (
-            <button onClick={() => friendsTabStore.switchTab('send')} className='w-full justify-between flex items-center'>
-                <div className='flex gap-[10px]'>
-                    <MdMail color={'white'} size={18} />    
-                    Приглашения
-                </div>
-
-                {
-                    friendsTabStore.FriendTab === 'send' && <FaCheck  size={15} />
-                }       
-            </button>
-        ),
-        key: '2',
-    },
-    ];
-    
     const playlists = playlistsByUser 
         ? (Array.isArray(playlistsByUser) ? playlistsByUser : [playlistsByUser])
     : [];
@@ -107,109 +61,113 @@ export const Sidebar = observer(() => {
         <>
             {
                 !userLoading &&
-                <aside className='sidebar'>
-                    <div className='sidebar__content'>
-                        <div className='sidebar__profile'>
-                            <div className='sidebar__profile-left'>
-                                <Image  src="/images/default2.png" className="rounded-full" alt="" height={32} width={32} />
+                <aside ref={sideBarRef}  className={`sidebar`}>
+                    {!collapsed && (
+                        <div className='sidebar__content'>
+                            <div className='sidebar__profile'>
+                                <div className='sidebar__profile-left'>
+                                    <Image  src="/images/default2.png" className="rounded-full" alt="" height={32} width={32} />
 
-                                {user?.username ?? ''}
+                                    {user?.username ?? ''}
+                                </div>
+
+                                <div className='sidebar__profile-right'>
+                                    <SwitchTheme />
+
+                                    <button onClick={() => router.push('/')} className='sidebar__profile-btn'>
+                                        <IoMdHome  size={25} />
+                                    </button>
+
+                                    <button className='sidebar__profile-btn'>
+                                        <IoIosMore  size={25} />                                    
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className='sidebar__profile-right'>
-                                <SwitchTheme />
+                            <div className='sidebar__group mb-[32px]'>
+                                <span className='sidebar__group-name'>MY COLLECTION <Tag  key={'gold'} color={'gold'} >Coming soon</Tag> </span>
 
-                                <button onClick={() => router.push('/')} className='sidebar__profile-btn'>
-                                    <IoMdHome  size={25} />
-                                </button>
+                                <ul className='sidebar__group-list'>
+                                    {
+                                        my_collection.map((item: IRoute) => {
+                                            const Icon = item.icon;
+                                            return (
+                                            <li key={item.id} onClick={() => route.push(item.link)} className='sidebar__group-item'>
+                                                <Icon size={25} />
+                                                {item.name}
+                                            </li>
+                                            );
+                                        })
+                                    }
+                                </ul>
 
-                                <button className='sidebar__profile-btn'>
-                                    <IoIosMore  size={25} />                                    
-                                </button>
                             </div>
-                        </div>
 
-                        <div className='sidebar__group mb-[32px]'>
-                            <span className='sidebar__group-name'>MY COLLECTION <Tag  key={'gold'} color={'gold'} >Coming soon</Tag> </span>
+                            <div className='sidebar__group mb-[32px]'>
+                                <span className='sidebar__group-name'>MY PLAYLIST</span>
 
-                            <ul className='sidebar__group-list'>
-                                {
-                                    my_collection.map((item: IRoute) => {
-                                        const Icon = item.icon;
-                                        return (
-                                        <li key={item.id} onClick={() => route.push(item.link)} className='sidebar__group-item'>
-                                            <Icon size={25} />
+                                <ul className='sidebar__group-list sidebar__group-list_myplaylist'>
+                                    {
+                                        playlistsForMusicGroup && playlistsForMusicGroup.map((item) => <li onClick={() => route.push(`/playlist/${item.id}`)} key={item.id} className='sidebar__group-item'>
+                                            <Image src={item.urlImage} height={100} width={100} className='sidebar__group-image' alt={item.name} />
                                             {item.name}
-                                        </li>
-                                        );
-                                    })
-                                }
-                            </ul>
+                                        </li>)
+                                    }
+                                </ul>
+                            </div>
 
-                        </div>
+                            <div onClick={() => route.push('/settings')} className='sidebar__group mb-[10px]'>
+                                <div className='sidebar__group-item'>
+                                    <CiSettings   size={25} />
 
-                        <div className='sidebar__group mb-[32px]'>
-                            <span className='sidebar__group-name'>MY PLAYLIST</span>
+                                    Settings
+                                </div>
+                            </div>
 
-                            <ul className='sidebar__group-list sidebar__group-list_myplaylist'>
-                                {
-                                    playlistsForMusicGroup && playlistsForMusicGroup.map((item) => <li onClick={() => route.push(`/playlist/${item.id}`)} key={item.id} className='sidebar__group-item'>
-                                        <Image src={item.urlImage} height={100} width={100} className='sidebar__group-image' alt={item.name} />
-                                        {item.name}
-                                    </li>)
-                                }
-                            </ul>
-                        </div>
+                            <div onClick={() => route.push('/rooms')} className='sidebar__group mb-[10px]'>
+                                <div className='sidebar__group-item'>
+                                    <AiFillSound  size={25} />
 
-                        <div onClick={() => route.push('/settings')} className='sidebar__group mb-[10px]'>
-                            <div className='sidebar__group-item'>
-                                <CiSettings   size={25} />
+                                    Rooms
+                                </div>
+                            </div>
 
-                                Settings
+                            <div onClick={() => route.push('/favorite')} className='sidebar__group mb-[10px]'>
+                                <div className='sidebar__group-item'>
+                                    <MdFavoriteBorder  size={25} />
+
+                                    Favorite
+                                </div>
+                            </div>
+
+                            <div onClick={() => route.push('/friends')} className='sidebar__group mb-[10px]'>
+                                <Dropdown menu={{ items: friendsMenuItems }} className='w-full sidebar__group-item'>
+                                    <a className='w-full flex gap-[10px] justify-between' onClick={(e) => e.preventDefault()}>
+                                        <div className='flex gap-[10px]'>
+                                            <FaUserFriends  size={25} />
+                                            <span>Friends</span>
+                                        </div>
+
+                                        <IoIosArrowDown size={25}/>
+                                    </a>
+                                </Dropdown>
+                            </div>
+
+                            <div onClick={onSubmit} className='sidebar__group  '>
+                                <div className='sidebar__group-item'>
+
+                                    <LuLogOut  size={25} />
+
+                                    Logout
+                                </div>
                             </div>
                         </div>
+                    )}
 
-                        <div onClick={() => route.push('/rooms')} className='sidebar__group mb-[10px]'>
-                            <div className='sidebar__group-item'>
-                                <AiFillSound  size={25} />
-
-                                Rooms
-                            </div>
-                        </div>
-
-
-                        <div onClick={() => route.push('/favorite')} className='sidebar__group mb-[10px]'>
-                            <div className='sidebar__group-item'>
-                                <MdFavoriteBorder  size={25} />
-
-                                Favorite
-                            </div>
-                        </div>
-
-                        <div onClick={() => route.push('/friends')} className='sidebar__group mb-[10px]'>
-                            <Dropdown menu={{ items }} className='w-full sidebar__group-item'>
-                                <a className='w-full flex gap-[10px] justify-between' onClick={(e) => e.preventDefault()}>
-                                    <div className='flex gap-[10px]'>
-                                        <FaUserFriends  size={25} />
-                                        <span>Friends</span>
-                                    </div>
-
-                                    <IoIosArrowDown size={25}/>
-                                </a>
-                            </Dropdown>
-                        </div>
-
-                        <div onClick={onSubmit} className='sidebar__group  '>
-                            <div className='sidebar__group-item'>
-
-                                <LuLogOut  size={25} />
-
-                                Logout
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='sidebar__handle'>
+                    <div onDoubleClick={toggleCollapse}
+                         onMouseDown={handleMouseDown} 
+                         style={{marginLeft: collapsed ? '20px' : '0px'}}
+                         className='sidebar__handle'>
                         <IoIosArrowForward  />
                     </div>
                 </aside>

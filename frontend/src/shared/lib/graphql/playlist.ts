@@ -62,7 +62,12 @@ export const GET_PLAYLIST_BY_ID = gql`
       tracks {
         id
         name
-        artist
+        artist {
+          id
+          name
+          imageUrl
+          genre
+        }
         duration
         urlFile
         created_at

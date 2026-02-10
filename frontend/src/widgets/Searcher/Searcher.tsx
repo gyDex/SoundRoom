@@ -36,10 +36,6 @@ export const Searcher = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    /* -------------------- search logic -------------------- */
-
-    /* -------------------- handlers -------------------- */
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
         setShow(true);
@@ -61,7 +57,7 @@ export const Searcher = () => {
         return tracks.filter(
             (track) =>
                 track.name.toLowerCase().includes(query) ||
-                track.artist.toLowerCase().includes(query)
+                track.artist.name.toLowerCase().includes(query)
         );
     }, [value, tracks]);
 
@@ -113,7 +109,7 @@ export const Searcher = () => {
                                 {item.name}
                             </span>
                             <span className="searcher__item-artist">
-                                {item.artist}
+                                {item.artist.name}
                             </span>
                         </div>
                     </li>

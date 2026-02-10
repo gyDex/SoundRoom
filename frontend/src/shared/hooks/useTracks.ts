@@ -6,7 +6,9 @@ import { Playlist } from "./usePlaylistUser";
 export interface Track {
   id: string;
   name: string;
-  artist: string;
+  artist: {
+    name: string
+  };
   duration: number;
   genre: string;
   urlFile: string;

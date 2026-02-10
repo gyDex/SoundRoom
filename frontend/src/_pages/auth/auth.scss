@@ -128,7 +128,7 @@
       }
     }
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &__btn_create:hover {
             background-color: $orange;
         }

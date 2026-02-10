@@ -38,7 +38,7 @@
         }
     }
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &__btn:hover svg, &__btn:focus-within svg   {
             fill: #679efe;
         }

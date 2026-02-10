@@ -58,7 +58,9 @@ export class TrackResolver {
 
   @Query(() => Track, { name: 'track' })
   findOne(@Args('id', { type: () => ID }) id: string) { 
-    return this.trackService.findOne(id);
+    const result = this.trackService.findOne(id); 
+    console.log(result)
+    return result;
   }
 
   // @Mutation(() => Track)

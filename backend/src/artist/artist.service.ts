@@ -12,7 +12,6 @@ export class ArtistService {
     private readonly artistRepository: Repository<Artist>,
   ) {}
 
-  // CREATE
   async create(input: CreateArtistInput): Promise<Artist> {
     const artist = this.artistRepository.create({
       name: input.name,
@@ -33,32 +32,29 @@ export class ArtistService {
     return this.artistRepository.save(artist);
   }
 
-  // READ ALL
   async findAll(): Promise<Artist[]> {
     return this.artistRepository.find({
       relations: ['tracks'],
     });
   }
 
-  // READ ONE
-async findOne(id: string): Promise<Artist> {
-  const artist = await this.artistRepository.findOne({
-    where: { id },
-    relations: {
-      tracks: {
-        artist: true, // 🔥 ВОТ ЭТО КЛЮЧЕВО
+  async findOne(id: string): Promise<Artist> {
+    const artist = await this.artistRepository.findOne({
+      where: { id },
+      relations: {
+        tracks: {
+          artist: true, 
+        },
       },
-    },
-  });
+    });
 
-  if (!artist) {
-    throw new NotFoundException(`Artist with id ${id} not found`);
+    if (!artist) {
+      throw new NotFoundException(`Artist with id ${id} not found`);
+    }
+
+    return artist;
   }
 
-  return artist;
-}
-
-  // UPDATE
   async update(
     id: string,
     input: UpdateArtistInput,
@@ -70,7 +66,6 @@ async findOne(id: string): Promise<Artist> {
     return this.artistRepository.save(artist);
   }
 
-  // DELETE
   async remove(id: string): Promise<boolean> {
     const result = await this.artistRepository.delete(id);
 
