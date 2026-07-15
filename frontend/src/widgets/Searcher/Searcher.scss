@@ -85,4 +85,8 @@
             background-color: #232325;
         }
     }
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
 }

@@ -2,6 +2,7 @@
 
 import graphQLClient from "@/shared/lib/graphql-client";
 import { GET_ARTIST_BY_ID } from "@/shared/lib/graphql/artist";
+import { ErrorState } from "@/widgets";
 import ArtistContent from "@/widgets/Artist/ArtistContent/ArtistContent";
 import ArtistTop from "@/widgets/Artist/ArtistTop/ArtistTop";
 import Loader from "@/widgets/Loader/Loader";
@@ -35,7 +36,7 @@ export const ArtistPage = () => {
     console.log(data)
     
     if (isLoading) return <Loader />;
-    if (error) return <div>Error loading playlist</div>;
+    if (error) return <ErrorState text="Ошибка загрузки страницы" />;
         
     return (
         <>

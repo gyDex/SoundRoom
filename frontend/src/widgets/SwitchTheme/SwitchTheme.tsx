@@ -1,12 +1,15 @@
 'use client'
 
+import { mobileMenuStore } from '@/shared/stores/mobile-menu.store'
 import { useThemeMode } from 'antd-style'
+import { observer } from 'mobx-react-lite'
 import { FaMoon, FaSun } from 'react-icons/fa'
 
-const SwitchTheme = () => {
+const SwitchTheme = observer(() => {
   const { themeMode, setThemeMode } = useThemeMode()
 
   const toggleTheme = () => {
+    mobileMenuStore.changeActive(false);
     setThemeMode(themeMode === 'dark' ? 'light' : 'dark')
   }
 
@@ -20,6 +23,6 @@ const SwitchTheme = () => {
       {themeMode === 'dark' ? <FaSun color='currentColor' size={20} /> : <FaMoon color='currentColor' size={20} />}
     </button>
   )
-}
+})
 
 export default SwitchTheme

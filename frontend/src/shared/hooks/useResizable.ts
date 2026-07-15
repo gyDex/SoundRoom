@@ -9,6 +9,7 @@ interface UseResizableOptions {
 export const useResizable = ({ minWidth = 320, maxWidth = 900, collapsedWidth }: UseResizableOptions = {}) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [savedWidth, setSavedWidth] = useState(minWidth);
 
   useEffect(() => {
     const element = ref.current;
@@ -19,9 +20,9 @@ export const useResizable = ({ minWidth = 320, maxWidth = 900, collapsedWidth }:
   const toggleCollapse = useCallback(() => {
     setCollapsed(prev => !prev);
     if (ref.current && collapsedWidth) {
-      ref.current.style.width = !collapsed ? `${collapsedWidth - 10}px` : `${minWidth}px`;
+      ref.current.style.width = !collapsed ? `${collapsedWidth - 10}px` : `${savedWidth}px`;
     }
-  }, [collapsed, collapsedWidth, minWidth]);
+  }, [collapsed, collapsedWidth, minWidth, savedWidth]);
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -38,6 +39,8 @@ export const useResizable = ({ minWidth = 320, maxWidth = 900, collapsedWidth }:
 
       if (newWidth < minWidth) newWidth = minWidth;
       if (newWidth > maxWidth) newWidth = maxWidth;
+
+      setSavedWidth(newWidth);
 
       element.style.width = newWidth + 'px';
     };

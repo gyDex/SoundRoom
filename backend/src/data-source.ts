@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import { Track } from './track/entities/track.entity';
 import { User } from './auth/entities/user.entity';
@@ -8,13 +9,20 @@ import { Friendship } from './friends/entities/friend-ship.entity';
 import { PartyEntity } from './party/entities/party.entity';
 import { Artist } from './artist/entities/artist.entity';
 
+console.log({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+});
+
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url: process.env.SUPABASE_DIRECT,
-
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: false,
+  // ssl: {
+  //   rejectUnauthorized: false,
+  // },
   
   extra: {
     max: 10

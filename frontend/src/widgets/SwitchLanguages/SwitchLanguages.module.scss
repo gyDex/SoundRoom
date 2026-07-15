@@ -1,0 +1,14 @@
+
+.switch-languages {
+    flex: 1;
+
+    :global(.ant-select-selector) {
+        -webkit-backdrop-filter: blur(10px) !important;
+        backdrop-filter: blur(10px) !important;
+        background-color: transparent !important;
+    }
+
+    :global(.ant-select-selection-placeholder) {
+        color: #fff !important;
+    }
+}

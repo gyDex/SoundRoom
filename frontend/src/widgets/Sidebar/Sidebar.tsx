@@ -11,7 +11,7 @@ import { MdFavoriteBorder } from 'react-icons/md';
 import { CiSettings } from 'react-icons/ci';
 import { logout } from '@/shared/hooks/auth/logout';
 import { useAuth } from '@/shared/lib/graphql/useAuth';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { Playlist } from '@/shared/hooks/usePlaylistUser';
 import { usePlaylist } from '@/shared/lib/graphql/usePlaylist';
 import { Dropdown, Tag } from 'antd';
@@ -20,18 +20,19 @@ import SwitchTheme from '../SwitchTheme/SwitchTheme';
 import { friendsMenuItems } from './data/friendsMenuItems'
 import { FaUserFriends } from 'react-icons/fa';
 import { useResizable } from '@/shared/hooks/useResizable';
+import { SidebarPlaylistItem } from './types';
+import { SidebarPlaylistGroup } from './SidebarPlaylistGroup';
 
 
 export const Sidebar = observer(() => {
+
     const route = useRouter();
 
     const { resetUser, user } = useAuth();
 
-    const router = useRouter();
+    const { userLoading, playlistsByUser, getPlaylist, userId, userError } = usePlaylist();
 
-    const { userLoading, playlistsByUser, getPlaylist, userId } = usePlaylist();
-
-    const { ref: sideBarRef, onMouseDown: handleMouseDown, collapsed, toggleCollapse } = useResizable({ minWidth: 320, maxWidth: 500, collapsedWidth: 40 });
+    const { ref: sideBarRef, onMouseDown: handleMouseDown, collapsed, toggleCollapse } = useResizable({ minWidth: 250, maxWidth: 500, collapsedWidth: 40 });
     
     useEffect(() => {
         if (userId !== undefined && userId !== null && !userLoading) {
@@ -43,8 +44,9 @@ export const Sidebar = observer(() => {
     const playlists = playlistsByUser 
         ? (Array.isArray(playlistsByUser) ? playlistsByUser : [playlistsByUser])
     : [];
+    
 
-    const playlistsForMusicGroup = playlists.map((playlistsByUser: Playlist) => ({
+    const playlistsForMusicGroup: SidebarPlaylistItem[] = playlists.map((playlistsByUser: Playlist) => ({
         id: playlistsByUser.id,
         name: playlistsByUser.name,
         urlImage: playlistsByUser.imageUrl || '',
@@ -60,7 +62,6 @@ export const Sidebar = observer(() => {
     return (
         <>
             {
-                !userLoading &&
                 <aside ref={sideBarRef}  className={`sidebar`}>
                     {!collapsed && (
                         <div className='sidebar__content'>
@@ -74,13 +75,13 @@ export const Sidebar = observer(() => {
                                 <div className='sidebar__profile-right'>
                                     <SwitchTheme />
 
-                                    <button onClick={() => router.push('/')} className='sidebar__profile-btn'>
+                                    <button onClick={() => route.push('/')} className='sidebar__profile-btn'>
                                         <IoMdHome  size={25} />
                                     </button>
 
-                                    <button className='sidebar__profile-btn'>
+                                    {/* <button className='sidebar__profile-btn'>
                                         <IoIosMore  size={25} />                                    
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
 
@@ -103,18 +104,7 @@ export const Sidebar = observer(() => {
 
                             </div>
 
-                            <div className='sidebar__group mb-[32px]'>
-                                <span className='sidebar__group-name'>MY PLAYLIST</span>
-
-                                <ul className='sidebar__group-list sidebar__group-list_myplaylist'>
-                                    {
-                                        playlistsForMusicGroup && playlistsForMusicGroup.map((item) => <li onClick={() => route.push(`/playlist/${item.id}`)} key={item.id} className='sidebar__group-item'>
-                                            <Image src={item.urlImage} height={100} width={100} className='sidebar__group-image' alt={item.name} />
-                                            {item.name}
-                                        </li>)
-                                    }
-                                </ul>
-                            </div>
+                            { !userError && <SidebarPlaylistGroup loading={userLoading} playlists={playlistsForMusicGroup} /> }
 
                             <div onClick={() => route.push('/settings')} className='sidebar__group mb-[10px]'>
                                 <div className='sidebar__group-item'>

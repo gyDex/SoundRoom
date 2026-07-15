@@ -1,8 +1,11 @@
 import { Select, Space } from 'antd';
+import style from './SwitchLanguages.module.scss'
 
 const SwitchLanguages = () => {
   return (
     <Select
+      className={style['switch-languages']}
+      popupClassName={style['switch-languages-dropdown']}
       optionFilterProp="label"
       placeholder="Select language"
       options={[
@@ -28,5 +31,6 @@ const SwitchLanguages = () => {
     />
   );
 };
+
 
 export default SwitchLanguages;

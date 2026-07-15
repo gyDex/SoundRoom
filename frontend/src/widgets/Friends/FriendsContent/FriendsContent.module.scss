@@ -1,0 +1,17 @@
+@use './../../../app/variables.scss' as *;
+
+.friends-content {
+    &__dropdown {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 10px;
+        background-color: $new_accent;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &__dropdown:hover {
+            background-color: $new_accent_hover !important;
+        }
+    }
+}

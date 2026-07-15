@@ -25,7 +25,10 @@ const ListFriends = () => {
 
   return (
     <div className='list-friends'>
-      <ul className='list-friends__content'>
+      <ul className={`list-friends__content ${( !data || data.length === 0 ) && 'list-friends__content_empty'}`}>
+        {
+         ( !data || data.length === 0 ) && <span className='list-friends__empty-text'>Список друзей пуст...</span> 
+        }
         {
           !isLoading && data && data.map((item: { username: string, tag: string, id: string }) => (
             <li key={item.id} className='list-friends__item'>

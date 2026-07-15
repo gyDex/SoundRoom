@@ -13,6 +13,8 @@ import { IoPersonAdd } from "react-icons/io5"
 import { friendsTabStore } from "@/shared/stores/friends-tab"
 import { observer } from "mobx-react-lite"
 
+import style from './FriendsContent.module.scss'
+
 export const FriendsContent = observer(() => {
 
     const useStyles = createStyles(({ token }) => ({
@@ -71,7 +73,9 @@ export const FriendsContent = observer(() => {
 
     return (
         <>
-            <Dropdown {...sharedProps} className="w-full flex !justify-start mt-[10px]" styles={functionStyles} trigger={['click']}>
+            <Dropdown {...sharedProps} 
+                className={style['friends-content__dropdown']}
+                styles={functionStyles} trigger={['click']}>
                 <Button type="primary">
                     <Space className="text-md font-bold">
                         { friendsTabStore.FriendTab === 'add' && 'Добавить друга'}

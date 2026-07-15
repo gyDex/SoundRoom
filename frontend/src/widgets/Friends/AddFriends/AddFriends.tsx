@@ -4,6 +4,8 @@ import { ChangeEvent, ChangeEventHandler, FormEvent, InputHTMLAttributes, useSta
 import './AddFriends.scss'
 import { useAuth } from '@/shared/lib/graphql/useAuth';
 import { sendFriendRequest } from '@/shared/hooks/friends/sendFriendRequest';
+import { QRCode } from 'antd';
+import Image from 'next/image';
 
 export const AddFriends = () => {
   const [inputTag, setInputTag] = useState('');
@@ -46,12 +48,31 @@ export const AddFriends = () => {
   return (
     <div className='add-friends'>
       <div className='add-friends__content'>
-        <span className='add-friends__title'>Ваш тэг для дружбы</span>
 
         <div className='add-friends__panel'>
-            <span className='add-friends__panel-text'>{user?.username ?? ''}#{user?.tag ?? ''}</span>
+            <div className='add-friends__panel-top'>
+              <Image className='add-friends__panel-avatar' src={'/images/def2.png'} alt='' height={80} width={80} />
+              <QRCode
+                bordered={false}
+                errorLevel="H"
+                value={`${user?.username ?? ''}#{user?.tag ?? ''}`}
+                icon="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
+              />
+            </div>
+            <div className='add-friends__panel-bottom'>
+              <Image className='add-friends__panel-avatar' src={'/images/def2.png'} alt='' height={80} width={80} />
 
-            <button onClick={handleCopyTag} className='add-friends__panel-btn'>КОПИРОВАТЬ</button>
+              <QRCode
+                bordered={false}
+                errorLevel="H"
+                value={`${user?.username ?? ''}#{user?.tag ?? ''}`}
+                icon="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
+              />
+
+              <span className='add-friends__panel-text'>{user?.username ?? 'user'}#{user?.tag ?? '1234'}</span>
+
+              <button onClick={handleCopyTag} className='add-friends__panel-btn'>Копировать тег</button>
+            </div>
         </div>
 
         <span className='add-friends__description'>Введите код дружбы того, кому хотите отправить приглашение.</span>

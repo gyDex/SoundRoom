@@ -96,7 +96,7 @@ export const SendRequest = () => {
                     ))
                 }
                 {
-                    !isLoading && (data === undefined || data === null || data.length === 0) && 'Извините, приглашений в друзья нет.'
+                    !isLoading && (data === undefined || data === null || data.length === 0) && <span className="list-friends__empty-text">Извините, приглашений в друзья нет.</span>
                 }
             </ul>
         </div>

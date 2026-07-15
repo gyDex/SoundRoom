@@ -10,7 +10,6 @@ import { conversionToTime } from '@/features/ConversionToTime';
 
 import { useSocket } from "@/shared/providers/SocketProvider";
 import { roomStore } from "@/shared/stores/room.store";
-import { MdOutline1xMobiledata } from "react-icons/md";
 
 export const BottomPlayer = observer(() => {
   const [volume, setVolume] = useState(10);  

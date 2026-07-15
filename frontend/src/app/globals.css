@@ -1,17 +1,25 @@
 @import "tailwindcss";
+@import './variables.scss';
 
 :root {
   --background: #171719;
   --foreground: #171717;
 
   --accent: #679efe;
-  --accent-shadow: rgb(103, 158, 254, 0.2);
   --accent-dark: #4d85e8;
-  --accent-blue: #4d85e8;
+  --accent-grey: hsl(219, 77%, 71%);
   --accent-light: #93b9ff;
-  --accent-transparent: #679efe11;
+  --login-description: #bad2ffd2;
+  --accent-darkness: #222b3b;
+  --orange: #fab392;
 
   --main-background: #0a0a0a;
+  --background-light: #181818;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
 }
 
 @theme inline {
@@ -25,20 +33,68 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --accent: #679efe;
+    --accent-dark: #4d85e8;
+    --accent-grey: hsl(219, 77%, 71%);
+    --accent-light: #93b9ff;
+    --login-description: #bad2ffd2;
+    --accent-darkness: #121c2d;
+    --orange: #fab392;
+
+    --main-background: #000000;
+    --background-light: #181818;
   }
 }
 
 html, body {
   height: 100%;
-  background-color: #0a0a0a;
 }
 
 body {
   overflow-x: hidden;
   color: var(--foreground);
   font-family: var(--font-inter), sans-serif;
+
+  
+      color: var(--foreground);
+    font-family: var(--font-inter), sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+
+  background: 
+    radial-gradient(circle at 20% 30%, var(--accent-darkness) 0%, var(--background) 40%, var(--main-background) 70%, var(--main-background) 100%),
+    radial-gradient(circle at 80% 70%, var(--accent-darkness) 0%, var(--background) 30%, var(--main-background) 60%, var(--main-background) 100%);
+    
+  background-blend-mode: lighten;
+
+  mix-blend-mode: screen;
+
+  animation: blobs 30s ease-in-out infinite alternate;
+}
+
+@keyframes blobs {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  25% {
+    transform: translate(-80px, 60px) scale(1.1);
+  }
+  50% {
+    transform: translate(60px, -40px) scale(1.15);
+  }
+  75% {
+    transform: translate(-40px, -60px) scale(1.05);
+  }
+  100% {
+    transform: translate(80px, 40px) scale(1);
+  }
 }
 
 .ant-form-item-explain-error {
-  @apply !text-rose-500 !font-semibold !text-[14px]
+  @apply !text-rose-500 !font-semibold !text-[14px];
 }

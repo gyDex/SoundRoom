@@ -21,6 +21,7 @@ export const Select: React.FC<Props> = ({ items, classNameBtn }) => {
   return (
     <>
       <button
+        onBlur={() => setShow(false)}
         onClick={() => setShow(prev => !prev)}
         className={classNameBtn ?? ''}
       >

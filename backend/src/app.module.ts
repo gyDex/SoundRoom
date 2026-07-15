@@ -39,14 +39,14 @@ import { ArtistModule } from './artist/artist.module';
         url:       configService.get<string>('SUPABASE_DIRECT'),
         logging: true, 
         synchronize: false,
-        ssl: true,
+        ssl: false,
         entities: ['dist/**/*.entity{.ts,.js}'],
-        extra: {
-          ssl: {
-            rejectUnauthorized: false
-          },
-          max: 10,
-        },
+        // extra: {
+        //   ssl: {
+        //     rejectUnauthorized: false
+        //   },
+        //   max: 10,
+        // },
       })
     }),
     TrackModule,

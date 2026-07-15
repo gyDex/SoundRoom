@@ -1,3 +1,5 @@
+@use '../../../app/variables.scss' as *;
+
 .list-friends {
     width: 100%;
     
@@ -10,13 +12,19 @@
     }
 
     &__content {
-        background-color: var(--accent-transparent);
+        background-color: $accent-transparent;
         padding-inline: 15px;
-        padding-block: 25px;
+        padding-block: 15px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
 
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         gap: 20px;
+    }
+
+    &__content_empty {
+        display: block;
     }
 
     &__btn-container {
@@ -151,6 +159,22 @@
         cursor: pointer;
     }
 
+    &__empty-text {
+        font-weight: 600;
+        font-size: 12px;
+    }
+    
+
+    @media screen and (min-width: 426px) {
+        &__content {
+            padding-block: 25px;
+        }
+
+        &__empty-text  {
+            font-size: 16px;
+        }
+    }
+
     @media screen and (min-width: 1024px) {
         &__search {
             max-width: 600px;
@@ -163,4 +187,12 @@
             color: white;
         }
     }
+}
+
+:where(.css-dev-only-do-not-override-10y1chj).ant-dropdown .ant-dropdown-menu, :where(.css-dev-only-do-not-override-10y1chj).ant-dropdown-menu-submenu .ant-dropdown-menu {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: transparent;
+    z-index: 100;
+    border: 1px solid rgb(255, 255, 255, 0.2);
 }

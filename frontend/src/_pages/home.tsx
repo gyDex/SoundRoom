@@ -1,6 +1,7 @@
 'use client';
 
 import { usePlaylist } from '@/shared/lib/graphql/usePlaylist';
+import { ErrorState } from '@/widgets';
 import Loader from '@/widgets/Loader/Loader';
 import MusicGroup from '@/widgets/MusicGroup/MusicGroup';
 import { useState } from 'react';
@@ -20,7 +21,7 @@ export const HomePage = () => {
   }
 
   if (userError) {
-    return <div>Ошибка загрузки данных</div>;
+    return <ErrorState text={"Ошибка загрузки данных"} />
   }
 
   if (!userId) {

@@ -12,26 +12,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  useEffect(() => {
-    if (loading) return; 
+  // useEffect(() => {
+  //   if (loading) return; 
 
-    const isAuthRoute = AUTH_ROUTES.some(route =>
-      pathname.startsWith(route)
-    );
+  //   const isAuthRoute = AUTH_ROUTES.some(route =>
+  //     pathname.startsWith(route)
+  //   );
 
-    const isProtectedRoute = PROTECTED_ROUTES.some(route =>
-      pathname.startsWith(route)
-    );
+  //   const isProtectedRoute = PROTECTED_ROUTES.some(route =>
+  //     pathname.startsWith(route)
+  //   );
 
-    if (isProtectedRoute && !isAuthenticated && !isAuthRoute) {
-      router.replace('/login'); 
-      return;
-    }
+  //   if (isProtectedRoute && !isAuthenticated && !isAuthRoute) {
+  //     router.replace('/login'); 
+  //     return;
+  //   }
 
-    if (isAuthRoute && isAuthenticated) {
-      router.replace('/');
-    }
-  }, [pathname, isAuthenticated, loading]);
+  //   if (isAuthRoute && isAuthenticated) {
+  //     router.replace('/');
+  //   }
+  // }, [pathname, isAuthenticated, loading]);
 
   return children;
 }
