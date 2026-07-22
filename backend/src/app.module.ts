@@ -39,14 +39,13 @@ import { ArtistModule } from './artist/artist.module';
         url:       configService.get<string>('SUPABASE_DIRECT'),
         logging: true, 
         synchronize: false,
-        ssl: false,
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false
+          }
+        },
         entities: ['dist/**/*.entity{.ts,.js}'],
-        // extra: {
-        //   ssl: {
-        //     rejectUnauthorized: false
-        //   },
-        //   max: 10,
-        // },
       })
     }),
     TrackModule,
@@ -59,6 +58,6 @@ import { ArtistModule } from './artist/artist.module';
     ArtistModule,
   ],
   controllers: [UploadController],
-  providers: [ConfigService, SupabaseService, RedisService],
+  providers: [ConfigService, SupabaseService],
 })
 export class AppModule {}

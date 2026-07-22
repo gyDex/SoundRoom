@@ -11,6 +11,7 @@ export interface Track {
   };
   duration: number;
   genre: string;
+  imageUrl?: string,
   urlFile: string;
   playlist?: Playlist[]
 }

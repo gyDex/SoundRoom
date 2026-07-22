@@ -44,7 +44,7 @@ export const PlaylistModal: React.FC<Props> = ({
 
   const [items, setItems] = useState<any[]>([]);
   const [selectTracks, setSelectTracks] = useState<string[]>([]);
-  const [imageUrl, setImageUrl] = useState<string>('/images/def.png');
+  const [imageUrl, setImageUrl] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
   const { data: tracks } = useTracks();
@@ -67,21 +67,21 @@ export const PlaylistModal: React.FC<Props> = ({
     }
   }, [tracks]);
 
-useEffect(() => {
-  console.log(playlist)
+  useEffect(() => {
+    console.log(playlist)
 
-  if (mode !== 'edit') return;
-  if (!playlist) return;
-  if (!playlist.tracks || playlist.tracks.length === 0) return;
+    if (mode !== 'edit') return;
+    if (!playlist) return;
+    if (!playlist.tracks || playlist.tracks.length === 0) return;
 
-  form.setFieldsValue({ name: playlist.name });
+    form.setFieldsValue({ name: playlist.name });
 
-  setSelectTracks(
-    playlist.tracks.map((track: any) => track.id)
-  );
+    setSelectTracks(
+      playlist.tracks.map((track: any) => track.id)
+    );
 
-  setImageUrl(playlist.imageUrl ?? '/images/def.png');
-}, [mode, playlist?.tracks]);
+    setImageUrl(playlist.imageUrl ?? '');
+  }, [mode, playlist?.tracks]);
 
   const handleCancel = () => setIsModalOpen?.(false);
 

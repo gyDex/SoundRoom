@@ -79,8 +79,11 @@ export class UploadController {
       'files'
     );
 
-    // Получаем публичный URL
-    const fileUrl = await this.supabaseService.getPublicUrl(fileName);
+    const signedUrl = await this.supabaseService.createSignedUrl(
+        "files",
+        fileName,
+        60 * 60
+    );
 
     const duration = await  this.supabaseService.getAudioDuration(file.buffer, file)
 
@@ -89,7 +92,7 @@ export class UploadController {
       artistId: trackData.artistId,
       duration: Math.floor(duration),
       genre: trackData.genre ?? 'Unknown Genre',
-      urlFile: fileUrl,
+      urlFile: signedUrl,
     })
 
     console.log(this.trackService.findAll().then((data) => console.log(data)))
@@ -97,14 +100,14 @@ export class UploadController {
 
     return {
       message: 'File uploaded successfully',
-      url: fileUrl,
+      url: signedUrl,
       filename: file.originalname,
       track: {
         name: trackData.name,
         artist: track.artist.name,
         duration: Math.floor(duration),
         genre: track.artist.genre,
-        urlFile: fileUrl,
+        urlFile: signedUrl,
         created_at: trackData.created_at
       }
     };

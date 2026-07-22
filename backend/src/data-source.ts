@@ -19,13 +19,17 @@ console.log({
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url: process.env.SUPABASE_DIRECT,
-  ssl: false,
-  // ssl: {
-  //   rejectUnauthorized: false,
-  // },
+  ssl: {
+    rejectUnauthorized: false,
+  },
   
   extra: {
-    max: 10
+    ssl: {
+        rejectUnauthorized: false,
+    },
+    max: 1,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
   },
 
   synchronize: false,
@@ -42,4 +46,5 @@ export const AppDataSource = new DataSource({
   ],
 
   migrations: ['src/migrations/*.ts'],
+  migrationsTransactionMode: 'none',
 });

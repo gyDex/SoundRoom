@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import PlaylistModal from '@/widgets/Modals/PlaylistModal'
 import { Select } from '@/widgets/Select/Select'
+import DefaultCover from '@/widgets/DefaultCover/DefaultCover'
 
 type Props = {
     name: string,
@@ -43,7 +44,13 @@ export const PlaylistTop:React.FC<Props> = ({name, tracks, imageUrl, id, isActiv
       setIsModalOpen={setIsModalOpen} />
       
       <section className='playlist-top'>
-          <Image className='playlist-top__image' src={imageUrl ?? '/images/def.png'} width={100} height={100} alt='poster' />
+          { imageUrl ? 
+              <Image className='card__image' height={128} width={128} src={imageUrl} alt=''/> 
+              :
+              <div className={`playlist-top__img-wrapper`}>
+                <DefaultCover /> 
+              </div>
+          }
 
           <Image className='playlist-top__bg' height={128} width={128} src={imageUrl ??'/images/def.png'} alt=''/>
           

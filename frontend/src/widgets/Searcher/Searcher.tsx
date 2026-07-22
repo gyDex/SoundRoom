@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Track, useTracks } from '@/shared/hooks/useTracks';
 import { useRouter } from 'next/navigation';
+import DefaultCover from '../DefaultCover/DefaultCover';
 
 export const Searcher = () => {
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -61,6 +62,8 @@ export const Searcher = () => {
         );
     }, [value, tracks]);
 
+    console.log(filteredTracks)
+
 
     return (
         <>
@@ -96,13 +99,11 @@ export const Searcher = () => {
                         className="searcher__item"
                         onClick={() => handleItemClick(item.id)}
                     >
-                        <Image
-                            className="searcher__item-image"
-                            alt="cover"
-                            height={48}
-                            width={48}
-                            src="/images/def.png"
-                        />
+                        { item.imageUrl ? 
+                            <Image className='searcher__item-image' height={128} width={128} src={item.imageUrl} alt=''/> 
+                            :
+                            <DefaultCover size='middle' /> 
+                        }
 
                         <div className="searcher__item-right">
                             <span className="searcher__item-name">

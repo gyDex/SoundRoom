@@ -15,7 +15,7 @@ export class SupabaseService {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
     const supabaseKey = this.configService.get<string>('SUPABASE_KEY');
 
-    // Валидация переменных окружения
+
     if (!supabaseUrl || !supabaseKey) {
       throw new Error(
         'Supabase configuration is missing. Please check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.',
@@ -33,6 +33,22 @@ export class SupabaseService {
           },
         },
       });
+  }
+
+  async createSignedUrl(
+      bucket: string,
+      path: string,
+      expires = 3600,
+  ) {
+      const { data, error } =
+          await this.supabase.storage
+          .from(bucket)
+          .createSignedUrl(path, expires);
+
+      if (error)
+          throw error;
+
+      return data.signedUrl;
   }
 
   async getPublicUrl(path: string): Promise<string> {

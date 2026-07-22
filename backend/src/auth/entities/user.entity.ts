@@ -6,8 +6,7 @@ import { PartyEntity } from '../../party/entities/party.entity';
 
 @ObjectType()
 @Entity('user')
-export class 
-User {
+export class User {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id: string;

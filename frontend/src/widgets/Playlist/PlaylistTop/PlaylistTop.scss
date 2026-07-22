@@ -5,6 +5,13 @@
     display: flex;
     gap: 20px;
 
+    &__img-wrapper {
+        height: 200px;
+        width: 200px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
     &__image {
         border-radius: 8px;
         position: relative;

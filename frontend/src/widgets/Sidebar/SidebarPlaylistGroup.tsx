@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
 import { SidebarPlaylistItem } from "./types";
 import Image from "next/image";
+import DefaultCover from "../DefaultCover/DefaultCover";
 
 interface SidebarPlaylistGroupProps {
     playlists: SidebarPlaylistItem[];
@@ -21,7 +22,12 @@ export const SidebarPlaylistGroup:React.FC<SidebarPlaylistGroupProps> = ({ loadi
                     <ul className='sidebar__group-list sidebar__group-list_myplaylist'>
                         {
                             playlists && playlists.map((item) => <li onClick={() => router.push(`/playlist/${item.id}`)} key={item.id} className='sidebar__group-item'>
-                                <Image src={item.urlImage} height={100} width={100} className='sidebar__group-image' alt={item.name} />
+                                { item.urlImage ? 
+                                    <Image src={item.urlImage} height={100} width={100} className='sidebar__group-image' alt={item.name} />
+                                    :
+                                    <DefaultCover size="tiny" /> 
+                                }
+                                
                                 {item.name}
                             </li>)
                         }

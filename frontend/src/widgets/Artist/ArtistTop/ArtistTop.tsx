@@ -1,3 +1,4 @@
+import DefaultProfile from '@/widgets/DefaultProfile/DefaultProfile'
 import './ArtistTop.scss'
 import Image from "next/image"
 import { MdVerified } from 'react-icons/md'
@@ -13,10 +14,17 @@ type Props = {
 
 const ArtistTop:React.FC<Props> = ({id, imageUrl, name, tracks, description}) => {
   return (
-      <section className='artist-top'>
-          <Image className='artist-top__image' src={imageUrl ?? '/images/def.png'} quality={100} width={250} height={250} alt='poster' />
+    <section className='artist-top'>
+        { 
+            imageUrl ? 
+                <Image className='artist-top__image' src={imageUrl ?? '/images/def.png'} quality={100} width={250} height={250} alt='poster' />
+            :
+            <div className={`playlist-top__img-wrapper`}>
+                <DefaultProfile /> 
+            </div>
+        }
 
-          <Image className='artist-top__bg' height={128} width={128} src={imageUrl ??'/images/def.png'} alt=''/>
+        <Image className='artist-top__bg' height={128} width={128} src={imageUrl ??'/images/def.png'} alt=''/>
           
         <div className='artist-top__content'>
             <div className='artist-top__top'>
@@ -33,11 +41,11 @@ const ArtistTop:React.FC<Props> = ({id, imageUrl, name, tracks, description}) =>
                 </h2>
 
                 <span className='artist-top__description'>
-                    {description ?? 'У трека отсутствует описание'}
+                    {description ?? 'No artist description'}
                 </span>
             </div>
         </div>
-      </section>
+    </section>
   )
 }
 

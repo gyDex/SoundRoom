@@ -23,8 +23,8 @@ const TrackPage = () => {
   return (
     <>
         <TrackTop data={data.track}  description={data?.track?.description} 
-                    imageUrl={data?.track?.imageUrl ?? '/images/def.png'} 
-                    name={data?.track?.name ?? ''} />
+                    imageUrl={data?.track?.imageUrl} 
+                    name={data?.track?.name ?? 'Untitled'} />
         <TrackContent description='' />
     </>
   )

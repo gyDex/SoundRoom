@@ -8,7 +8,6 @@ module.exports = new DataSource({
     migrations: ['dist/db/migrations/*{.ts,.js}'],
     migrationsRun: true,
     synchronize: false,
-    ssl: true,
     port: 5432,
     extra: {
         ssl: {

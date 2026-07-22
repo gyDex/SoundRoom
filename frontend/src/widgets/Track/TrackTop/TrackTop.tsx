@@ -8,6 +8,7 @@ import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 import { DateUtils } from '@/shared/classes/DateUtils'
 import FavoriteButton from '@/widgets/FavoriteButton/FavoriteButton'
+import DefaultCover from '@/widgets/DefaultCover/DefaultCover'
 
 type Props = {
     name: string,
@@ -17,12 +18,22 @@ type Props = {
     data: any,
 }
 
+
 const TrackTop:React.FC<Props> = observer(({data, name, imageUrl, description}) => {
+console.log(imageUrl)
+
+    
   return (
     <section className='track-top'>
-        <Image className='track-top__image' src={imageUrl ?? '/images/def.png'} width={100} height={100} alt='poster' />
+        { imageUrl ? 
+            <Image className='track-top__image' src={imageUrl} width={100} height={100} alt='poster' />
+            :
+            <div className={`playlist-top__img-wrapper`}>
+                <DefaultCover /> 
+            </div>
+        }
 
-        <Image className='track-top__bg' height={128} width={128} src={imageUrl ??'/images/def.png'} alt=''/>
+        <Image className='track-top__bg' height={128} width={128} src={imageUrl} alt=''/>
         
         <div className='track-top__content'>
             <div className='track-top__top'>

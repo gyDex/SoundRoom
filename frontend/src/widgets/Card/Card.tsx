@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { playerStore } from '@/shared/stores/player';
 import { getPlaylistByID } from '@/shared/hooks/usePlaylistById';
+import DefaultCover from '../DefaultCover/DefaultCover';
 
 interface ICard {
     variation: 'album' | 'default',
@@ -40,7 +41,12 @@ const Card: React.FC<ICard> = ({id, variation, urlImage, link, name, description
         })}>
             {
                 variation === 'default' && <>
-                    <Image className='card__image' height={128} width={128} src={urlImage ? urlImage : '/images/default2.png'} alt=''/>
+                
+                    { urlImage ? 
+                        <Image className='card__image' height={128} width={128} src={urlImage} alt='urlImage'/> 
+                        :
+                        <DefaultCover /> 
+                    }
 
                     <div className='card__content'>
                         <h2 className='card__title'>
@@ -56,7 +62,12 @@ const Card: React.FC<ICard> = ({id, variation, urlImage, link, name, description
 
             {
                 variation === 'album' && <>
-                    <Image className='card__image' height={128} width={128} src={urlImage ? urlImage : '/images/default2.png'} alt=''/>
+                    
+                    { urlImage ? 
+                        <Image className='card__image' height={128} width={128} src={urlImage ? urlImage : '/images/default_album.png'} alt=''/> 
+                        :
+                        <DefaultCover /> 
+                    }
 
                     <div className='card__content card__content_large'>
                         {
@@ -98,6 +109,7 @@ const Card: React.FC<ICard> = ({id, variation, urlImage, link, name, description
                             </button>
                         }
 
+                        
                         <Image className='card__content-bg' height={128} width={128} src={urlImage ? urlImage : '/images/default2.png'} alt=''/>
 
                         <span className='card__subtitle'>

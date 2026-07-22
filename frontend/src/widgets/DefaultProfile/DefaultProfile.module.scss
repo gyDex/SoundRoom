@@ -1,0 +1,17 @@
+.defimg-profile {
+
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1 / 1;
+
+    background: linear-gradient(to top, rgb(128, 128, 128, 0.2), rgba(37, 135, 255, 0.2));
+
+    &_tiny {
+        border-radius: 8px;
+        width: 35px;   
+        object-fit: cover;
+        height: 35px;
+    }   
+}

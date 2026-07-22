@@ -12,6 +12,7 @@ import FavoriteButton from '@/widgets/FavoriteButton/FavoriteButton'
 import { useFavTracks } from '@/shared/hooks/useFavTracks'
 import { useSocket } from '@/shared/providers/SocketProvider'
 import { useAuth } from '@/shared/lib/graphql/useAuth'
+import DefaultCover from '@/widgets/DefaultCover/DefaultCover'
 
 type Props = {
     id: string;
@@ -24,9 +25,10 @@ type Props = {
 
     index: number,
     playlist: any[];
+    imageUrl?: string,
 }
 
-export const PlaylistItem: React.FC<Props> = observer(({ playlist, index, id, name, urlFile, duration, artist, createAt  }) => {
+export const PlaylistItem: React.FC<Props> = observer(({ imageUrl, playlist, index, id, name, urlFile, duration, artist, createAt  }) => {
     
     const [isHover, setHover] = useState(false);
 
@@ -89,13 +91,13 @@ export const PlaylistItem: React.FC<Props> = observer(({ playlist, index, id, na
             onMouseLeave={() => setHover(false)}
         >
             <div onClick={handleClick}  className='playlist-item__image-wrap'>
-                <Image 
-                    className='playlist-item__image' 
-                    src={'/images/def.png'} 
-                    width={100} 
-                    height={100} 
-                    alt='poster' 
-                />
+                <div className='playlist-item__image'>
+                    { imageUrl ? 
+                        <Image className='playlist-item__image' height={128} width={128} src={imageUrl} alt=''/> 
+                        :
+                        <DefaultCover sizeIcon='32' /> 
+                    }
+                </div>
                 
                 {showIcon && (
                     <div className='playlist-item__hover'>
