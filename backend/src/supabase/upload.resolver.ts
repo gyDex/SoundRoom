@@ -3,7 +3,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { SupabaseService } from './supabase.service';
 import { TrackService } from 'src/track/track.service';
 import * as path from 'path'
-import { randomUUID } from 'crypto';
 import { transliterate } from 'transliteration';
 
 @Controller('upload')
@@ -93,7 +92,7 @@ export class UploadController {
       duration: Math.floor(duration),
       genre: trackData.genre ?? 'Unknown Genre',
       urlFile: signedUrl,
-    })
+    }, signedUrl)
 
     console.log(this.trackService.findAll().then((data) => console.log(data)))
 

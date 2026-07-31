@@ -11,7 +11,6 @@ type Artist {
   id: ID!
   imageUrl: String!
   name: String!
-  tracks: [Track!]
 }
 
 input CreateArtistInput {
@@ -141,8 +140,10 @@ type Playlist {
 
 type Query {
   artist(id: ID!): Artist!
+  artistRadio(artistId: ID!, limit: Int = 20): [Track!]!
   artists: [Artist!]!
   checkFavorite(input: AddFavoriteInput!): Boolean!
+  dayPlaylist(limit: Int = 20): [Track!]!
   getAllFriends: [User!]!
   getConnectedUsers(input: GetUsersInput!): PartyOutput!
   getFavorite: [Track!]!
@@ -151,6 +152,7 @@ type Query {
   playlist(id: ID!): Playlist!
   playlists: [Playlist!]!
   playlistsByUser(userId: ID!): [Playlist!]!
+  similarTracks(limit: Int = 10, trackId: ID!): [Track!]!
   track(id: ID!): Track!
   tracks: [Track!]!
   tracksByIds(ids: [ID!]!): [Track!]!
@@ -184,11 +186,14 @@ type TokenResponse {
 
 type Track {
   artist: Artist!
+  bpm: Float!
   created_at: DateTime
   duration: Int!
+  embedding: [Float!]
   genre: String!
   id: ID!
   name: String!
+  playCount: Int!
   playlists: [Playlist!]
   urlFile: String
 }

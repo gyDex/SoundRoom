@@ -22,10 +22,10 @@ export const MigrationDataSource = new DataSource({
 
   // host: process.env.DB_HOST,
   host: 'localhost',
-  port: Number(process.env.DB_PORT),
+  port: 5432,
   username: 'postgres',
   password: 'postgres',
-  database: 'postgres',
+  database: 'soundroom_db',
 
   // ssl: {
   //   rejectUnauthorized: false,
@@ -36,7 +36,7 @@ export const MigrationDataSource = new DataSource({
   uuidExtension: 'pgcrypto',
 
   extra: {
-    max: 1, // Критически важно для миграций: только 1 соединение
+    max: 1, 
   },
 
   entities: [
@@ -51,7 +51,7 @@ export const MigrationDataSource = new DataSource({
 
   migrations: ['src/migrations/*.ts'],
 
-  synchronize: false,
+  synchronize: true,
 
   logging: true,
 });

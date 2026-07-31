@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Int, Float } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToMany, OneToMany, ManyToOne } from 'typeorm';
 import { Playlist } from './playlist.entity';
 import { IsOptional } from 'class-validator';
@@ -16,9 +16,26 @@ export class Track {
   @Field()
   name: string;
 
+  @Column('float')
+  @Field(() => Float)
+  bpm: number;
+
   @Column()
   @Field(() => Int)
   duration: number;
+
+  @Column({ default: 0 })
+  @Field(() => Int)
+  playCount: number;
+
+  @Column({ 
+    type: 'vector', 
+    dimension: 384, 
+    nullable: true, 
+    select: false 
+  } as any)
+  @Field(() => [Float], { nullable: true }) 
+  embedding?: number[];
 
   @Column({ nullable: true })
   @Field({ nullable: true })

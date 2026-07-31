@@ -22,7 +22,7 @@ export class Artist {
     @Column()
     genre: string;
 
-    @Field(() => [Track], { nullable: true })
+    // @Field(() => [Track], { nullable: true })
     @OneToMany(() => Track, track => track.artist)
     tracks: Track[];
 }

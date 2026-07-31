@@ -99,3 +99,20 @@ export const DELETE_TRACK = gql`
     }
   }
 `;
+
+const GET_DAY_PLAYLIST = `
+  query GetDayPlaylist($limit: Int) {
+    dayPlaylist(limit: $limit) {
+      id
+      name
+      genre
+      bpm
+      urlFile
+      artist {
+        id
+        name
+        imageUrl
+      }
+    }
+  }
+`;

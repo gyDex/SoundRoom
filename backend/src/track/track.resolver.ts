@@ -14,7 +14,7 @@ export class TrackResolver {
 
   @Mutation(() => Track)
   createTrack(@Args('createTrackInput') createTrackInput: CreateTrackInput) {
-    return this.trackService.create(createTrackInput);
+    return this.trackService.create(createTrackInput, createTrackInput.urlFile);
   }
 
   @Mutation(() => Boolean)
@@ -63,6 +63,15 @@ export class TrackResolver {
     return result;
   }
 
+  @Query(() => [Track], { name: 'dayPlaylist' })
+  getDayPlaylist(
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 20 }) limit: number,
+    @Context() ctx: any,
+  ) {
+    const userId = ctx.req.user?.userId; 
+    return this.trackService.getDayPlaylist(userId, limit);
+  }
+
   // @Mutation(() => Track)
   // updateTrack(@Args('updateTrackInput') updateTrackInput: UpdateTrackInput) {
   //   return this.trackService.update(updateTrackInput.id, updateTrackInput);
@@ -71,5 +80,22 @@ export class TrackResolver {
   @Mutation(() => Track)
   removeTrack(@Args('id', { type: () => Int }) id: any) {
     return this.trackService.remove(id);
+  }
+
+
+    @Query(() => [Track], { name: 'similarTracks' })
+  getSimilarTracks(
+    @Args('trackId', { type: () => ID }) trackId: string,
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 10 }) limit: number,
+  ) {
+    return this.trackService.getSimilarTracks(trackId, limit);
+  }
+
+  @Query(() => [Track], { name: 'artistRadio' })
+  getArtistRadio(
+    @Args('artistId', { type: () => ID }) artistId: string,
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 20 }) limit: number,
+  ) {
+    return this.trackService.getArtistRadio(artistId, limit);
   }
 }

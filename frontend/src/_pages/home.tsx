@@ -2,6 +2,7 @@
 
 import { usePlaylist } from '@/shared/lib/graphql/usePlaylist';
 import { ErrorState } from '@/widgets';
+import DayPlaylist from '@/widgets/DayPlaylist/DayPlaylist';
 import Loader from '@/widgets/Loader/Loader';
 import MusicGroup from '@/widgets/MusicGroup/MusicGroup';
 import { useState } from 'react';
@@ -36,14 +37,17 @@ export const HomePage = () => {
   }));
 
   return (
-    <MusicGroup
-      subtitle="Your Playlist"
-      variation="album"
-      IsModalOpen={isModalOpen}
-      setIsModalOpen={setModalOpen}
-      IsAddPlaylist
-      nameGroup="Твои плейлисты"
-      items={playlistsForMusicGroup}
-    />
+    <>
+      <MusicGroup
+        subtitle="Your Playlist"
+        variation="album"
+        IsModalOpen={isModalOpen}
+        setIsModalOpen={setModalOpen}
+        IsAddPlaylist
+        nameGroup="Твои плейлисты"
+        items={playlistsForMusicGroup}
+      />
+      <DayPlaylist />
+    </>
   );
 };
