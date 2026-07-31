@@ -5,9 +5,7 @@
     margin-bottom: 50px;
 
     &__modal {
-        
         color: white;
-
     }
 
     &__modal .ant-modal-title {
@@ -40,19 +38,14 @@
         font-size: 24px;
     }
 
-    &__top {
-        width: 100%;
+    &__right {
+        margin-top: 10px;
         display: flex;
         justify-content: space-between;
-        padding-right: 30px;
-    }
-
-    &__right button:last-child {
-        margin-left: 5px;
     }
 
     &__btn {
-        padding: 12px;
+        padding: 16px;
         border-radius: 100%;
         border: #ebebff23 1px solid;
         background-color: #171718;
@@ -78,6 +71,27 @@
 
         &__btn-add:hover svg, &__btn-add:focus-within svg {
             fill:  #679efe;
+        }
+    }
+
+    @media screen and (min-width: 426px) {
+        &__top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding-right: 30px;
+        }
+
+        &__right button:last-child {
+            margin-left: 5px;
+        }
+
+        &__right {
+            margin-top: 0px;
+        }
+
+        &__btn {
+            padding: 12px;
         }
     }
 }

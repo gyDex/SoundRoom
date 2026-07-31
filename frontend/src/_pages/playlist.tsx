@@ -11,28 +11,48 @@ import { useParams } from "next/navigation"
 export const PlaylistPage = () => {
   const { id } = useParams() as any;
 
-  function usePlaylist() {
-      return useQuery({
-        queryKey: ['playlistId'],
-        queryFn: async (): Promise<any> => {
-          try {
-            const data = await graphQLClient.request(GET_PLAYLIST_BY_ID, {
-              id: id
-            });
-            return data;
-          } catch (error) {
-            console.error('❌ GraphQL error:', error); 
-            throw error;
-          }
-        },
-        retry: 1, 
-      });
+  // function usePlaylist() {
+  //     return useQuery({
+  //       queryKey: ['playlistId'],
+  //       queryFn: async (): Promise<any> => {
+  //         try {
+  //           const data = await graphQLClient.request(GET_PLAYLIST_BY_ID, {
+  //             id: id
+  //           });
+  //           return data;
+  //         } catch (error) {
+  //           console.error('❌ GraphQL error:', error); 
+  //           throw error;
+  //         }
+  //       },
+  //       retry: 1, 
+  //     });
+  // }
+
+  // const { data, isLoading, error } = usePlaylist();
+
+  // if (isLoading) return <Loader />;
+  // if (error) return <div>Error loading playlist</div>;
+
+  
+  const data = {
+    playlist: {
+      name: 'Test',
+      imageUrl: '',
+      tracks: [
+        {
+            name: 'Test Song',
+            id: "123213fdf",
+            urlFile: '',
+            artist: {
+              name: 'Test Artist'
+            },
+            duration: 1000000,
+            created_at: '',
+        }
+      ]
+    }
   }
-
-  const { data, isLoading, error } = usePlaylist();
-
-  if (isLoading) return <Loader />;
-  if (error) return <div>Error loading playlist</div>;
 
   return (
     <>

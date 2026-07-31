@@ -52,15 +52,48 @@
         object-fit: cover;
     }
 
+
+
     @media (hover:hover) {
         &:hover {
             background-color: #18181878;
             box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 12px, rgba(85, 136, 255, 0.05) 0px 30px 150px;
         }
+    }
 
-        &__image {
+    @media screen and (max-width: 768px) {
+        grid-template-columns: 100px 1fr 1fr 1fr 50px;
 
+        &__date {
+            display: none;
+        }
+
+        &__favorite {
+            display: none;
+        }
+
+        &__btn-more {
+            min-height: 24px;
+            min-width: 24px;
+            cursor: pointer;
         }
     }
 
+    @media screen and (max-width: 426px) {
+        grid-template-columns: 100px 1fr 50px;
+
+        &__album {
+            display: none;
+        }
+
+        &__time {
+            display: none;
+        }
+    }
+
+    @media screen and (min-width: 768px) {
+        &__btn-more {
+            display: none;
+        }
+    }
 }

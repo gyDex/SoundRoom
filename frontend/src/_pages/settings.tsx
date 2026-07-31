@@ -2,7 +2,7 @@
 
 import { disable2FA } from '@/shared/hooks/settings/disable2FA';
 import { enable2FA } from '@/shared/hooks/settings/enable2FA';
-import { Button, Input, QRCode, Space, Switch } from 'antd';
+import { QRCode, Space, Switch } from 'antd';
 import { useState, useRef } from 'react';
 import { Typography } from 'antd';
 

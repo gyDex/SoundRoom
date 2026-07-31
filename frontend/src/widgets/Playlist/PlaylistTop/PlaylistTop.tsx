@@ -10,16 +10,18 @@ import { useQueryClient } from '@tanstack/react-query'
 import PlaylistModal from '@/widgets/Modals/PlaylistModal'
 import { Select } from '@/widgets/Select/Select'
 import DefaultCover from '@/widgets/DefaultCover/DefaultCover'
+import FavouritesCover from '@/widgets/FavouritesCover/FavouritesCover'
 
 type Props = {
     name: string,
-    imageUrl: string,
+    imageUrl?: string,
+    isFavourites?: boolean,
     id: string,
     isActiveDeleteBtn?: boolean,
     tracks?: any
 }
 
-export const PlaylistTop:React.FC<Props> = ({name, tracks, imageUrl, id, isActiveDeleteBtn = true}) => {
+export const PlaylistTop:React.FC<Props> = ({name, tracks, imageUrl, id, isActiveDeleteBtn = true, isFavourites}) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -44,15 +46,28 @@ export const PlaylistTop:React.FC<Props> = ({name, tracks, imageUrl, id, isActiv
       setIsModalOpen={setIsModalOpen} />
       
       <section className='playlist-top'>
-          { imageUrl ? 
+          { 
+            (imageUrl && !isFavourites)  &&
+            <div className={`playlist-top__img-wrapper`}>
               <Image className='card__image' height={128} width={128} src={imageUrl} alt=''/> 
-              :
-              <div className={`playlist-top__img-wrapper`}>
-                <DefaultCover /> 
-              </div>
+            </div>
           }
 
-          <Image className='playlist-top__bg' height={128} width={128} src={imageUrl ??'/images/def.png'} alt=''/>
+          {
+            (!imageUrl && !isFavourites) &&
+            <div className={`playlist-top__img-wrapper`}>
+              <DefaultCover /> 
+            </div>
+          }
+
+          {
+            (isFavourites) && 
+            <div className={`playlist-top__img-wrapper`}>
+              <FavouritesCover /> 
+            </div>
+          }
+
+          <Image className='playlist-top__bg' height={128} width={128} src={imageUrl || ''} alt=''/>
           
           <div className='playlist-top__content'>
               <h2 className='playlist-top__title'>

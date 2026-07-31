@@ -131,6 +131,7 @@
           title="Rooms"
           tabList={tabList as any}
           activeTabKey={activeTabKey}
+          className='rooms-card'
           onTabChange={(key) => 
             setActiveTabKey(key as 'create' | 'connect')
           }

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import './variables.scss';
 
+
+
 :root {
   --background: #171719;
   --foreground: #171717;
@@ -20,6 +22,17 @@
 main {
   display: flex;
   flex-direction: column;
+}
+
+.rooms-card {
+  background: linear-gradient(to top, rgba(80, 80, 80, 0.2), rgba(37, 135, 255, 0.2));
+  border: rgba(235, 235, 255, 0.137254902) 1px solid;
+}
+.rooms-card .ant-card-head  .ant-tabs .ant-tabs-nav::before {
+  border: none;
+}
+.rooms-card .ant-card-head {
+  border-bottom: 1px solid rgba(225, 225, 225, 0.25);
 }
 
 @theme inline {

@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation'
 import FavoriteButton from '@/widgets/FavoriteButton/FavoriteButton'
 import { useSocket } from '@/shared/providers/SocketProvider'
 import { useAuth } from '@/shared/lib/graphql/useAuth'
+import DefaultCover from '@/widgets/DefaultCover/DefaultCover'
 
 type Props = {
     id: string;
@@ -23,9 +24,10 @@ type Props = {
 
     index: number,
     playlist: any[];
+    imageUrl?: string;
 }
 
-export const ArtistItem: React.FC<Props> = observer(({ playlist, index, id, name, urlFile, duration, artist, createAt  }) => {
+export const ArtistItem: React.FC<Props> = observer(({ imageUrl, playlist, index, id, name, urlFile, duration, artist, createAt  }) => {
     
     const [isHover, setHover] = useState(false);
 

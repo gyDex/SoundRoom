@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { DateUtils } from '@/shared/classes/DateUtils'
 import FavoriteButton from '@/widgets/FavoriteButton/FavoriteButton'
 import DefaultCover from '@/widgets/DefaultCover/DefaultCover'
+import { conversionToTime } from '@/features/ConversionToTime'
 
 type Props = {
     name: string,
@@ -22,7 +23,6 @@ type Props = {
 const TrackTop:React.FC<Props> = observer(({data, name, imageUrl, description}) => {
 console.log(imageUrl)
 
-    
   return (
     <section className='track-top'>
         { imageUrl ? 
@@ -51,7 +51,6 @@ console.log(imageUrl)
                 <h2 className='track-top__title'>
                     {name}
                 </h2>
-
 
                 <span className='track-top__description'>
                     {description ?? 'У трека отсутствует описание'}
@@ -94,6 +93,8 @@ console.log(imageUrl)
                 </button>
 
                 <FavoriteButton id={data.id} />
+
+                <span className='track-top__duration'>{conversionToTime(data.duration)}</span>
             </div>
         </div>
 

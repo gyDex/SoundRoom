@@ -2,64 +2,42 @@
     position: relative;
     width: 100%;
     padding-top: 50px;
+    z-index: 100;
+
     display: flex;
     gap: 20px;
 
     &__img-wrapper {
-        height: 200px;
-        width: 200px;
+        min-width: 125px;
+        min-height: 125px;
+        z-index: 100;
         border-radius: 8px;
         overflow: hidden;
     }
 
     &__image {
+        width: 125px;
+        height: 125px;
+
         border-radius: 8px;
-        position: relative;
-        height: 200px;
-        width: 200px;
         object-fit: cover;
+        position: relative;
         z-index: 10;
     }
 
     &__bg {
         position: absolute;
-        top: 0;
-        left: 0;
+        inset: 0;
+
         width: 100%;
         height: 100%;
+
         object-fit: cover;
-        z-index: 1;
         filter: blur(35px);
         opacity: 0.7;
-        transform: scale(1.5); 
-    }
+        transform: scale(1.5);
 
-    &__title {
-        font-size: 44px;
-        font-weight: 700;
-        position: relative;
-        z-index: 10;
-    }
-
-    &__btn-delete {
-        position: relative;
-        z-index: 100;
-        width: fit-content;
-
-        display: flex;
-        gap: 5px;
-        font-size: 12px;
-        align-items: center;
-        justify-content: center;
-
-        cursor: pointer;
-
-        background-color: rgba(240, 248, 255, 0.05);
-        font-weight: 500;
-        border-radius: 15px;
-
-        color: rgb(255, 255, 255, 0.5);
-        transition: 0.4s color;
+        z-index: 1;
     }
 
     &__content {
@@ -68,18 +46,68 @@
         justify-content: space-between;
     }
 
+    &__title {
+        position: relative;
+        z-index: 10;
+
+        font-size: 32px;
+        font-weight: 700;
+        overflow-wrap: break-word;
+    }
+
+    &__btn-delete {
+        position: relative;
+        z-index: 100;
+
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+
+        cursor: pointer;
+
+        border-radius: 15px;
+
+        background: rgba(240, 248, 255, 0.05);
+        color: rgba(255, 255, 255, 0.5);
+
+        font-size: 12px;
+        font-weight: 500;
+
+        transition: color .4s;
+    }
+
     &__btn-text {
         display: none;
     }
+}
 
-
-    @media (hover:hover) {
-        &__btn-delete:hover {
-            color: white;
-            // border: 0.5px solid white;
+@media (min-width: 426px) {
+    .playlist-top {
+        &__img-wrapper {
+            min-width: 200px;
+            min-height: 200px;
         }
-        
-        &__btn-delete:hover  &__btn-text {
+
+        &__image {
+            width: 200px;
+            height: 200px;
+        }
+
+        &__title {
+            font-size: 44px;
+        }
+    }
+}
+
+@media (hover: hover) {
+    .playlist-top {
+        &__btn-delete:hover {
+            color: #fff;
+        }
+
+        &__btn-delete:hover &__btn-text {
             display: block;
         }
     }
